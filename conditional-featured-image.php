@@ -173,10 +173,10 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
           public function set_visibility( $post ) {
                
                // abort if it's not a single post
-               if ( ! is_single( $post->ID ) ) {
+               if ( ! ( is_single( $post->ID ) || is_page( $post->ID ) ) ) {
                     return;
                }
-               
+                              
                // get visibility option
                $hide = (bool) get_post_meta( $post->ID, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', true );
                
