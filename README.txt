@@ -1,0 +1,29 @@
+=== Conditionally display featured image on singular pages ===
+Contributors: cyrillbolliger
+Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
+Requires at least: 4.6
+Tested up to: 4.6.1
+Stable tag: 1.0
+License: GPLv2
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn\'t affect the archives view.
+
+== Description ==
+This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page but you don\'t want the featured image to be shown on every posts view itself.
+
+The plugin adds a simple checkbox to the featured image meta box, where you can choose, if an image will be shown in the singular view or not.
+
+== Installation ==
+1. Upload the plugin files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the \'Plugins\' screen in WordPress
+3. Use the Settings->Plugin Name screen to configure the plugin
+4. (Make your instructions match the desired user flow for activating and installing your plugin. Include any steps that might be needed for explanatory purposes)
+
+== Screenshots ==
+1. Backend
+2. Frontend
+
+== Changelog ==
+= 1.0 =
+* Initial public release
