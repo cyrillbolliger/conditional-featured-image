@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Conditionally display featured image on singular pages
-Plugin URI: 
+Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
 Version: 1.0
 Author: Cyrill Bolliger
