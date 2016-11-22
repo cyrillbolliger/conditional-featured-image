@@ -1,4 +1,4 @@
-=== Conditionally display featured image on singular pages ===
+=== Conditionally display featured image on singular posts and pages ===
 Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
@@ -17,8 +17,6 @@ The plugin adds a simple checkbox to the featured image meta box, where you can 
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the \'Plugins\' screen in WordPress
-3. Use the Settings->Plugin Name screen to configure the plugin
-4. (Make your instructions match the desired user flow for activating and installing your plugin. Include any steps that might be needed for explanatory purposes)
 
 == Screenshots ==
 1. Backend
