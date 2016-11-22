@@ -3,7 +3,7 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Tested up to: 4.6.1
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,12 @@ The plugin adds a simple checkbox to the featured image meta box, where you can 
 2. Frontend
 
 == Changelog ==
+= 1.1.2 =
+* Improve plugin title
+* Improve checkbox string
+* Improve documentation
+* Updated stable tag
+
 = 1.1.1 =
 * Updated stable tag
 
