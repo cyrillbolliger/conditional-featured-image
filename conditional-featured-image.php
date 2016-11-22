@@ -118,7 +118,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
                <p>
                     <label for="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>">
                         <input type="checkbox" name="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>" id="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>" value="yes" <?php if ( isset ( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) checked( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ][0], 'yes' ); ?> />
-                        <?php _e( 'Display featured image in post preview only.', 'conditional-featured-image' )?>
+                        <?php _e( 'Display featured image in post lists only, hide on singular views.', 'conditional-featured-image' )?>
                     </label>
                </p>
                <?php // the custom .inside div will be closed by the core
