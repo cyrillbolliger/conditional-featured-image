@@ -25,6 +25,7 @@ The plugin adds a simple checkbox to the featured image meta box, where you can 
 == Changelog ==
 = 1.1.3 =
 * Tested up to WordPress 4.7.0
+* Removed lanuage folder. Languages are now loaded from wordpress.org
 
 = 1.1.2 =
 * Improve plugin title
