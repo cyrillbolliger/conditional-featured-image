@@ -5,8 +5,7 @@ Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
 Version: 1.1.3
 Author: Cyrill Bolliger
-Text Domain: conditional-featured-image
-Domain Path: /languages
+Text Domain:  conditionally-display-featured-image-on-singular-pages
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -44,22 +43,12 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
           /**
            * Starting point of the magic
            */
-          public function run() {
-               // load textdomain
-               add_action( 'plugins_loaded', 'load_plugin_textdomain' );
-               
+          public function run() {               
                // modify the featured image metabox
                add_action( 'add_meta_boxes', array( &$this, 'modify_postimagediv_metabox' ) );
                
                // save the custom meta input
                add_action( 'save_post', array( &$this, 'save_custom_meta_content' ) );
-          }
-          
-          /**
-           * Load plugins translations
-           */
-          public function load_plugin_textdomain() {
-               load_plugin_textdomain( 'conditional-featured-image', FALSE, CYBOCFI_PLUGIN_PATH . '/languages/' );
           }
           
           /**
@@ -80,7 +69,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
                remove_meta_box( 'postimagediv', 'post', 'side' );
 
                // add the new metabox
-               add_meta_box( 'postimagediv', __( 'Featured Image', 'conditional-featured-image' ), array( &$this, 'new_post_thumbnail_meta_box' ), $post_type, 'side', 'low');
+               add_meta_box( 'postimagediv', __( 'Featured Image', 'conditionally-display-featured-image-on-singular-pages' ), array( &$this, 'new_post_thumbnail_meta_box' ), $post_type, 'side', 'low');
           }
           
           /**
@@ -118,7 +107,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
                <p>
                     <label for="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>">
                         <input type="checkbox" name="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>" id="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>" value="yes" <?php if ( isset ( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) checked( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ][0], 'yes' ); ?> />
-                        <?php _e( 'Display featured image in post lists only, hide on singular views.', 'conditional-featured-image' )?>
+                        <?php _e( 'Display featured image in post lists only, hide on singular views.', 'conditionally-display-featured-image-on-singular-pages' )?>
                     </label>
                </p>
                <?php // the custom .inside div will be closed by the core
