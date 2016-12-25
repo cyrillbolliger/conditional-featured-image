@@ -24,6 +24,9 @@ The plugin adds a simple checkbox to the featured image meta box, where you can 
 2. Frontend
 
 ## Changelog ##
+### 1.2.0 ###
+* Get ready for language packs (set text domain equal to the name of the plugins folder, remove load_plugin_textdomain)
+
 ### 1.1.3 ###
 * Tested up to WordPress 4.7.0
 * Removed lanuage folder. Languages are now loaded from wordpress.org
