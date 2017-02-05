@@ -3,8 +3,8 @@
 
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
-Tested up to: 4.7.0
-Stable tag: 1.2.0
+Tested up to: 4.7.2
+Stable tag: 1.2.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,9 @@ The plugin adds a simple checkbox to the featured image meta box, where you can 
 2. Frontend
 
 ## Changelog ##
+### 1.2.1 ###
+* Tested up to WordPress 4.7.2
+
 ### 1.2.0 ###
 * Get ready for language packs (set text domain equal to the name of the plugins folder, remove load_plugin_textdomain)
 
