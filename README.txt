@@ -2,8 +2,8 @@
 Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
-Tested up to: 4.9.0
-Stable tag: 1.2.2
+Tested up to: 4.9.6
+Stable tag: 1.3.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,10 @@ IMPORTANT NOTICE: If your theme does a customized call to load the featured imag
 2. Frontend
 
 == Changelog ==
+= 1.3.0 =
+* Make it more robust so it will also work with [Elementor](https://elementor.com/)
+* Tested up to WordPress 4.9.6
+
 = 1.2.2 =
 * Tested up to WordPress 4.7.3
 * Tested up to WordPress 4.8.0
