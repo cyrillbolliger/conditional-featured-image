@@ -152,12 +152,17 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 	
 	class Cybocfi_Frontend {
+		/**
+		 * The id of the post, where the image shall be removed
+         *
+         * @var int
+		 */
+	    private $post_id;
 		
 		/**
 		 * Starting point of the magic
 		 */
 		public function run() {
-			// modify the featured image metabox
 			add_action( 'the_post', array( &$this, 'set_visibility' ) );
 		}
 		
@@ -190,6 +195,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * removed
 		 */
 		public function filter_featured_image( $post_id ) {
+		    $this->post_id = $post_id;
 			add_filter( 'get_post_metadata', array( &$this, 'hide_featured_image' ), 10, 3 );
 		}
 		
@@ -206,7 +212,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @return boolean
 		 */
 		public function hide_featured_image( $value, $object_id, $meta_key ) {
-			if ( '_thumbnail_id' == $meta_key ) {
+			if ( '_thumbnail_id' == $meta_key && $object_id === $this->post_id ) {
 				return false;
 			}
 		}
