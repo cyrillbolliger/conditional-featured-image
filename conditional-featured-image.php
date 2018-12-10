@@ -3,7 +3,7 @@
 Plugin Name: Conditionally display featured image on singular pages and posts
 Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
-Version: 1.2.2
+Version: 1.3.0
 Author: Cyrill Bolliger
 Text Domain:  conditionally-display-featured-image-on-singular-pages
 License: GPLv2
@@ -24,7 +24,7 @@ define( 'CYBOCFI_PLUGIN_PATH', dirname( __FILE__ ) );
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '1.2.2' );
+define( 'CYBOCFI_VERSION', '1.3.0' );
 
 /**
  * Plugin prefix
@@ -110,6 +110,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 			?>
             <p>
                 <label for="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>">
+                    <input type="hidden" name="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>" value="no">
                     <input type="checkbox" name="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>"
                            id="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>"
                            value="yes" <?php if ( isset ( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) {
@@ -141,9 +142,8 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 			
 			// save input
 			if ( isset( $_POST[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) {
-				update_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', 'yes' );
-			} else {
-				update_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', '' );
+                $value = 'yes' === $_POST[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ? 'yes' : '';
+				update_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', $value );
 			}
 		}
 	}
