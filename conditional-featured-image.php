@@ -79,7 +79,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		/**
 		 * Create content of the new metabox
 		 *
-		 * @global type $post
+		 * @global WP_Post $post
 		 */
 		public function new_post_thumbnail_meta_box() {
 			global $post;
@@ -125,7 +125,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		/**
 		 * Save the custom meta input
 		 *
-		 * @param type $post_id as given by the save_post action
+		 * @param int $post_id as given by the save_post action
 		 */
 		public function save_custom_meta_content( $post_id ) {
 			// check save status
