@@ -2,19 +2,22 @@
 Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
-Tested up to: 4.9.6
-Stable tag: 1.3.0
+Tested up to: 5.0.0
+Stable tag: 1.4.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
 
 == Description ==
+= Important notice =
+* This plugin does not work with Gutenberg. Use the classic editor instead.
+* If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()` or `wp_get_attachment_image()` to be sure it will work.
+
+= Description =
 This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page but you don't want the featured image to be shown on every posts view itself.
 
 The plugin adds a simple checkbox to the featured image meta box, where you can choose, if an image will be shown in the singular view or not.
-
-IMPORTANT NOTICE: If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()` or `wp_get_attachment_image()` to be sure it will work.
 
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
@@ -25,6 +28,10 @@ IMPORTANT NOTICE: If your theme does a customized call to load the featured imag
 2. Frontend
 
 == Changelog ==
+= 1.4.0 =
+* Makes sure, we do only modify the main post
+* Tested up to WordPress 5.0.0
+
 = 1.3.0 =
 * Make it more robust so it will also work with [Elementor](https://elementor.com/)
 * Tested up to WordPress 4.9.6
