@@ -244,6 +244,50 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
                     add_action( 'the_post', array( &$this, 'set_visibility' ) );
                 }
             });
+
+            /**
+             * Remove the featured image from Yoast SEO's schema.org if needed.
+             *
+             * @since 2.1.0
+             */
+            add_filter('wpseo_schema_graph_pieces', array( &$this, 'set_schema_visibility' ), 10, 2 );
+		}
+
+        /**
+         * Hide the featured image in the Yoast SEO schema.org output, if the
+         * corresponding flag is set.
+         *
+         * @param array $pieces The schema pieces.
+         * @param WPSEO_Schema_Context $context An object with context variables.
+         *
+         * @return array
+         */
+        public function set_schema_visibility($pieces, $context) {
+            $post_id = $context->id;
+
+            if ( $this->is_image_marked_hidden( $post_id ) ) {
+                return $this->remove_mainimage_schema_block( $pieces );
+            } else {
+                return $pieces;
+            }
+		}
+
+        /**
+         * Remove the Yoast SEO schema block that carries the mainimage
+         *
+         * @param array $pieces
+         *
+         * @return array
+         */
+        private function remove_mainimage_schema_block( $pieces ) {
+            foreach($pieces as $key => $piece) {
+                if ($piece instanceof WPSEO_Schema_MainImage) {
+                    unset($pieces[$key]);
+                    break;
+                }
+            }
+
+            return $pieces;
 		}
 
 		/**
@@ -259,13 +303,23 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 				return;
 			}
 
-			// get visibility option
-			$hide = (bool) get_post_meta( $post->ID, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', true );
-
 			// hide the featured image if it was set so
-			if ( $hide ) {
+			if ( $this->is_image_marked_hidden( $post->ID ) ) {
 				$this->filter_featured_image( $post->ID );
 			}
+		}
+
+        /**
+         * Should the featured image of the given post be hidden?
+         *
+         * @param int $post_id the post id of the post with the featured image
+         *
+         * @return bool
+         */
+        private function is_image_marked_hidden( $post_id )
+        {
+            // get visibility option
+            return (bool) get_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', true );
 		}
 
 		/**
