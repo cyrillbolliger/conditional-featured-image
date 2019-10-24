@@ -232,7 +232,18 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * Starting point of the magic
 		 */
 		public function run() {
-			add_action( 'the_post', array( &$this, 'set_visibility' ) );
+            /**
+             * Take loop_start as entry point since it doesn't affect the header
+             * stuff, where the featured image might be used for the open graph
+             * or a twitter card.
+             *
+             * @since 2.1.0
+             */
+            add_action('loop_start', function ( $wp_query ) {
+                if ( $wp_query->is_main_query() ) {
+                    add_action( 'the_post', array( &$this, 'set_visibility' ) );
+                }
+            });
 		}
 
 		/**
