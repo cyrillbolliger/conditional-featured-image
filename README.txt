@@ -2,8 +2,8 @@
 Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
-Tested up to: 5.2.4
-Stable tag: 2.1.0
+Tested up to: 5.4.2
+Stable tag: 2.1.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ The plugin adds a simple checkbox to the featured image panel (or meta box if yo
 2. Frontend
 
 == Changelog ==
+= 2.1.1 =
+* Update dependencies
+
 = 2.1.0 =
 * Add support for Yoast SEO (don't filter image for the social header data)
 
@@ -55,7 +58,7 @@ The plugin adds a simple checkbox to the featured image panel (or meta box if yo
 
 = 1.1.3 =
 * Tested up to WordPress 4.7.0
-* Removed lanuage folder. Languages are now loaded from wordpress.org
+* Removed language folder. Languages are now loaded from wordpress.org
 
 = 1.1.2 =
 * Improve plugin title
