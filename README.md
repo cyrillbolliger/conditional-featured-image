@@ -1,14 +1,7 @@
 # Conditionally display featured image on singular posts and pages #
-## Wordpress Plugin by @cyrillbolliger ##
+## Plugin for WordPress
 
-Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page  
-Requires at least: 4.6  
-Tested up to: 5.2.4  
-Stable tag: 2.1.0  
-License: GPLv2  
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-
-Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
+Get the plugin from the [WordPress Plugin Repository](https://wordpress.org/plugins/conditionally-display-featured-image-on-singular-pages/).
 
 ## Description ##
 ### Important notice ### 
@@ -19,57 +12,16 @@ This plugin lets you choose for each post or page, if the featured image should 
 
 The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
 
-## Installation ##
-1. [Download latest release](https://github.com/cyrillbolliger/conditional-featured-image/releases/latest) and upload files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the `Plugins` screen in WordPress
+---
+## Contribute
 
-## Screenshots ##
-1. Backend
-2. Frontend
+### Getting started
+* Clone the repo
+* Run `docker-compose up -d`
+* Open [localhost:8080](http://localhost/8080)
+* Activate the plugin
 
-## Changelog ##
-
-### 2.1.0 ###
-* Add support for Yoast SEO (don't filter image for the social header data)
-
-### 2.0.0 ###
-* Add support for the block editor (Gutenberg)
-* Tested up to WordPress 5.2.2
-
-### 1.4.0 ###
-* Makes sure, we do only modify the main post
-* Tested up to WordPress 5.0.0
-
-### 1.3.0 ###
-* Make it more robust so it will also work with [Elementor](https://elementor.com/)
-* Tested up to WordPress 4.9.6
-
-### 1.2.2 ###
-* Tested up to WordPress 4.7.3
-* Tested up to WordPress 4.8.0
-* Tested up to WordPress 4.9.0
-
-### 1.2.1 ###
-* Tested up to WordPress 4.7.2
-
-### 1.2.0 ###
-* Get ready for language packs (set text domain equal to the name of the plugins folder, remove load_plugin_textdomain)
-
-### 1.1.3 ###
-* Tested up to WordPress 4.7.0
-* Removed lanuage folder. Languages are now loaded from wordpress.org
-
-### 1.1.2 ###
-* Improve plugin title
-* Improve checkbox string
-* Improve documentation
-* Updated stable tag
-
-### 1.1.1 ###
-* Updated stable tag
-
-### 1.1 ###
-* Extended functionality to pages
-
-### 1.0 ###
-* Initial public release
+### JS-Stuff (Gutenberg)
+* Install dependencies with `npm install`
+* Watch the file changes with `npm run start`
+* Build the production files with `npm run build` 

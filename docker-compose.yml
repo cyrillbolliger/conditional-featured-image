@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  wordpress:
+    image: "wordpress:latest"
+    environment:
+      WORDPRESS_DB_HOST: "mysql"
+      WORDPRESS_DB_NAME: "wordpress"
+      WORDPRESS_DB_PASSWORD: ""
+      WORDPRESS_DB_USER: "root"
+      WORDPRESS_DEBUG: 1
+    depends_on:
+      - "mysql"
+    ports:
+      - 8080:80
+    volumes:
+      - "wp:/var/www/html:rw"
+      - ".:/var/www/html/wp-content/plugins/conditional-featured-image:ro"
+  wp-cli:
+    image: "wordpress:cli"
+    environment:
+      - APACHE_RUN_USER="www-data"
+      - APACHE_RUN_GROUP="www-data"
+    depends_on:
+      - "mysql"
+    volumes:
+      - "wp:/var/www/html:rw"
+      - ".:/var/www/html/wp-content/plugins/conditional-featured-image:ro"
+  mysql:
+    image: "mariadb:10.2"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "wordpress"
+      MYSQL_ROOT_PASSWORD: ""
+
+volumes:
+  wp: {}
