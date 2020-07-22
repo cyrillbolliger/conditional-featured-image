@@ -39,11 +39,20 @@ define( 'CYBOCFI_PLUGIN_PREFIX', 'cybocfi' );
 if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 
 	class Cybocfi_Admin {
+        /**
+         * The label of the checkbox in the featured image meta box.
+         *
+         * @string
+         */
+	    private $label;
+
 		/**
 		 * Starting point of the magic
 		 */
 		public function run() {
 			add_action( 'current_screen', function () {
+                $this->set_checkbox_label();
+
 				// distinguish between the block editor and the classic editor
 				if ( $this->is_block_editor() ) {
 					// register the js
@@ -61,9 +70,29 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 			} );
 		}
 
-		/**
-		 * Expose the meta field to the rest api so we can use it with the block editor
-		 */
+        /**
+         * Define the text of the label of the checkbox in the featured image
+         * meta box. Use the 'cibocfi_checkbox_label' filter to change it.
+         */
+		private function set_checkbox_label() {
+		    $label = __(
+                'Display featured image in post lists only, hide on singular views.',
+                'conditionally-display-featured-image-on-singular-pages'
+            );
+
+            /*
+             * Filter the label of the checkbox in the featured image meta box.
+             *
+             * @since 2.2.0
+             *
+             * @param string $label The localized label text.
+             */
+            $this->label = apply_filters( 'cibocfi_checkbox_label', $label );
+        }
+
+        /**
+         * Expose the meta field to the rest api so we can use it with the block editor
+         */
 		public static function expose_meta_field_to_rest_api() {
 			register_meta( 'post', CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', array(
 				'show_in_rest'      => true,
@@ -94,6 +123,12 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 					'wp-i18n',
 				)
 			);
+
+			wp_localize_script(
+			        'cybocfi-script',
+                    'cybocfiL10n',
+                    array( 'featuredImageCheckboxLabel' => $this->label )
+            );
 		}
 
 		/**
@@ -185,7 +220,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
                            value="yes" <?php if ( isset ( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) {
 						checked( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ][0], 'yes' );
 					} ?> />
-					<?php _e( 'Display featured image in post lists only, hide on singular views.', 'conditionally-display-featured-image-on-singular-pages' ) ?>
+					<?php echo $this->label ?>
                 </label>
             </p>
 			<?php // the custom .inside div will be closed by the core

@@ -18,7 +18,7 @@ class HideFeaturedImage extends React.Component {
             <>
                 <PanelRow>
                     <CheckboxControl
-                        label={__('Display featured image in post lists only, hide on singular views.', 'conditionally-display-featured-image-on-singular-pages')}
+                        label={cybocfiL10n.featuredImageCheckboxLabel}
                         checked={meta.cybocfi_hide_featured_image}
                         onChange={
                             (value) => {
