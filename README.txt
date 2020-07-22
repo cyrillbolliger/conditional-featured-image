@@ -19,6 +19,23 @@ This plugin lets you choose for each post or page, if the featured image should 
 The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
 
 == Frequently asked questions ==
+= Can I limit this plugin to posts? =
+Yes. By default, the plugin is available on any post type, that has a featured image. But there is a filter, that lets you control, for with post types the plugin should be available. The following example limits it to posts only:
+`
+function enable_conditionally_featured_image_plugin_by_post_type( $post_type ) {
+    return 'post' === $post_type;
+}
+add_filter( 'cybocfi_post_type', 'enable_conditionally_featured_image_plugin_by_post_type' );
+`
+The filter provides you the current post type and you can decide if you want to use the plugin for this post type be returning `true` to enable and `false` to disable it. Add the following snippet to your `functions.php` to enable the plugin for posts and pages, but disable it for any other post type:
+`
+function enable_conditionally_featured_image_plugin_by_post_type( $post_type ) {
+    $allowed_post_types = array( 'post', 'page' ); // add any post type you want to use the plugin with
+    return in_array( $post_type, $allowed_post_types );
+}
+add_filter( 'cybocfi_post_type', 'enable_conditionally_featured_image_plugin_by_post_type' );
+`
+
 = Is it possible to get the plugin in my language? =
 Absolutely. You're invited to [contribute a translation](https://translate.wordpress.org/projects/wp-plugins/conditionally-display-featured-image-on-singular-pages/) in your language. Please keep in mind, that the translation needs to be reviewed by the community, so it will take a little while until it gets accepted.
 
@@ -40,6 +57,9 @@ add_filter( 'cibocfi_checkbox_label', 'change_conditionally_featured_image_label
 2. Frontend
 
 == Changelog ==
+= 2.3.0 =
+* Allow to enable/disable the plugin by post type
+
 = 2.2.0 =
 * Allow filtering the featured image checkbox label
 * Update readme

@@ -50,25 +50,52 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 * Starting point of the magic
 		 */
 		public function run() {
-			add_action( 'current_screen', function () {
-                $this->set_checkbox_label();
-
-				// distinguish between the block editor and the classic editor
-				if ( $this->is_block_editor() ) {
-					// register the js
-					add_action( 'enqueue_block_editor_assets', array( &$this, 'load_block_editor_js' ) );
-
-					// expose the meta field to the rest api
-					self::expose_meta_field_to_rest_api();
-				} else {
-					// modify the featured image metabox
-					add_action( 'add_meta_boxes', array( &$this, 'modify_postimagediv_metabox' ) );
-
-					// save the custom meta input
-					add_action( 'save_post', array( &$this, 'save_custom_meta_content' ) );
-				}
-			} );
+			add_action( 'current_screen', array($this, 'check_post_type_and_load') );
 		}
+
+        /**
+         * Get the post type, expose it to the filter to disable the plugin,
+         * then load it, if not disabled.
+         *
+         * @param WP_Screen $current_screen
+         */
+		public function check_post_type_and_load( $current_screen ) {
+		    $post_type = $current_screen->post_type;
+            /*
+             * Allow to disable the plugin for certain post types.
+             *
+             * @since 2.3.0
+             *
+             * @param boolean $post_type The current post type.
+             */
+            $enabled = apply_filters( 'cybocfi_post_type', $post_type, true );
+
+            if ( false !== $enabled ) { // check for not false so it will work if the filter doesn't return anything
+                $this->initialize_metabox();
+            }
+        }
+
+        /**
+         * Load the modified featured image meta box.
+         */
+		private function initialize_metabox() {
+            $this->set_checkbox_label();
+
+            // distinguish between the block editor and the classic editor
+            if ( $this->is_block_editor() ) {
+                // register the js
+                add_action( 'enqueue_block_editor_assets', array( &$this, 'load_block_editor_js' ) );
+
+                // expose the meta field to the rest api
+                self::expose_meta_field_to_rest_api();
+            } else {
+                // modify the featured image metabox
+                add_action( 'add_meta_boxes', array( &$this, 'modify_postimagediv_metabox' ) );
+
+                // save the custom meta input
+                add_action( 'save_post', array( &$this, 'save_custom_meta_content' ) );
+            }
+        }
 
         /**
          * Define the text of the label of the checkbox in the featured image
