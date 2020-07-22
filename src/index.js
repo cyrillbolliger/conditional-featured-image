@@ -1,6 +1,5 @@
 "use strict";
 
-import {__} from "@wordpress/i18n";
 import {CheckboxControl, PanelRow} from "@wordpress/components";
 import {withSelect, withDispatch} from "@wordpress/data";
 import {createElement, Fragment} from "@wordpress/element";

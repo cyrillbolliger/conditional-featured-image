@@ -31,7 +31,6 @@
     "@wordpress/compose": "^3.19.2",
     "@wordpress/data": "^4.22.2",
     "@wordpress/element": "^2.16.0",
-    "@wordpress/hooks": "^2.9.0",
-    "@wordpress/i18n": "^3.14.0"
+    "@wordpress/hooks": "^2.9.0"
   }
 }
