@@ -40,6 +40,11 @@ add_filter( 'cibocfi_checkbox_label', 'change_conditionally_featured_image_label
 2. Frontend
 
 == Changelog ==
+= 2.2.0 =
+* Allow filtering the featured image checkbox label
+* Update readme
+* Update dependencies
+
 = 2.1.2 =
 * Exclude none essential data from SVN
 
