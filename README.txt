@@ -3,7 +3,7 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Tested up to: 5.4.2
-Stable tag: 2.1.2
+Stable tag: 2.2.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
