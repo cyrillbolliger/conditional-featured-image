@@ -27,11 +27,11 @@
     "@wordpress/scripts": "^10.0.0"
   },
   "dependencies": {
-    "@wordpress/components": "^9.7.0",
-    "@wordpress/compose": "^3.16.0",
-    "@wordpress/data": "^4.19.0",
-    "@wordpress/element": "^2.14.0",
-    "@wordpress/hooks": "^2.8.0",
-    "@wordpress/i18n": "^3.13.0"
+    "@wordpress/components": "^9.9.0",
+    "@wordpress/compose": "^3.19.2",
+    "@wordpress/data": "^4.22.2",
+    "@wordpress/element": "^2.16.0",
+    "@wordpress/hooks": "^2.9.0",
+    "@wordpress/i18n": "^3.14.0"
   }
 }
