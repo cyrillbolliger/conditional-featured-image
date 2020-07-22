@@ -18,6 +18,19 @@ This plugin lets you choose for each post or page, if the featured image should 
 
 The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
 
+== Frequently asked questions ==
+= Is it possible to get the plugin in my language? =
+Absolutely. You're invited to [contribute a translation](https://translate.wordpress.org/projects/wp-plugins/conditionally-display-featured-image-on-singular-pages/) in your language. Please keep in mind, that the translation needs to be reviewed by the community, so it will take a little while until it gets accepted.
+
+= How can I change the text of the checkbox? =
+There is a filter hook for this. Add the following snippet to your functions.php:
+`
+function change_conditionally_featured_image_label( $label ) {
+    return 'Hide featured image in post'; // change this string
+}
+add_filter( 'cibocfi_checkbox_label', 'change_conditionally_featured_image_label' );
+`
+
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the `Plugins` screen in WordPress
