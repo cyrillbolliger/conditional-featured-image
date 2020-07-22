@@ -24,7 +24,7 @@ define( 'CYBOCFI_PLUGIN_PATH', dirname( __FILE__ ) );
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '2.1.2' );
+define( 'CYBOCFI_VERSION', '2.2.0' );
 
 /**
  * Plugin prefix
