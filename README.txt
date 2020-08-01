@@ -2,6 +2,7 @@
 Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
+Requires PHP: 5.6
 Tested up to: 5.5.0
 Stable tag: 2.3.1
 License: GPLv2
@@ -21,8 +22,9 @@ The plugin adds a simple checkbox to the featured image panel (or meta box if yo
 == Frequently asked questions ==
 = The plugin doesn't work with my theme. What can I do? =
 Either
-* kindly ask the theme developer to use one of the dedicated WordPress functions (`wp_get_attachment_image()`, `get_the_post_thumbnail()`, `the_post_thumbnail()`) to load the featured image in the singular views.
-* or create a [child theme](https://developer.wordpress.org/themes/advanced-topics/child-themes/) that replaces the call, that loads the featured image, with one of the methods listed above.
+
+*   kindly ask the theme developer to use one of the dedicated WordPress functions (`wp_get_attachment_image()`, `get_the_post_thumbnail()`, `the_post_thumbnail()`) to load the featured image in the singular views.
+*   or create a [child theme](https://developer.wordpress.org/themes/advanced-topics/child-themes/) that replaces the call, that loads the featured image, with one of the methods listed above.
 
 = Can I limit this plugin to posts (and exclude other post types)? =
 Yes. By default, the plugin is available on any post type, that has a featured image. But there is a filter, that lets you control, for with post types the plugin should be available. The following example limits it to posts only:
