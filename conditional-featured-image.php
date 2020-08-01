@@ -24,7 +24,7 @@ define( 'CYBOCFI_PLUGIN_PATH', dirname( __FILE__ ) );
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '2.3.0' );
+define( 'CYBOCFI_VERSION', '2.3.1' );
 
 /**
  * Plugin prefix
@@ -335,7 +335,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		}
 
         /**
-         * Remove the Yoast SEO schema block that carries the mainimage
+         * Remove the Yoast SEO schema block that carries the main image
          *
          * @param array $pieces
          *
@@ -353,7 +353,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		}
 
 		/**
-		 * Hide the featured image on single posts where the correspondig flag
+		 * Hide the featured image on single posts where the corresponding flag
 		 * was set in the backend.
 		 *
 		 * @param WP_Post $post as passed by the the_post action
@@ -396,7 +396,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		}
 
 		/**
-		 * Set the thumbnail_id to false to make the wordpress core belive
+		 * Set the thumbnail_id to false to make the wordpress core believe
 		 * there is no thumbnail/featured image
 		 *
 		 * @param mixed $value given by the get_post_metadata filter
