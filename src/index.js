@@ -6,11 +6,15 @@ import {createElement, Fragment} from "@wordpress/element";
 import {withState, compose} from "@wordpress/compose";
 import {addFilter} from "@wordpress/hooks";
 
+let dirty = false;
+
 class HideFeaturedImage extends React.Component {
     render() {
         const {
             meta,
+            isNew,
             updateHideFeaturedImage,
+            getValue,
         } = this.props;
 
         return (
@@ -18,7 +22,7 @@ class HideFeaturedImage extends React.Component {
                 <PanelRow>
                     <CheckboxControl
                         label={cybocfiL10n.featuredImageCheckboxLabel}
-                        checked={meta.cybocfi_hide_featured_image}
+                        checked={getValue(isNew, meta)}
                         onChange={
                             (value) => {
                                 this.setState({isChecked: value});
@@ -37,8 +41,10 @@ const composedHideFeaturedImage = compose([
     withSelect((select) => {
         const currentMeta = select('core/editor').getCurrentPostAttribute('meta');
         const editedMeta = select('core/editor').getEditedPostAttribute('meta');
+        const isEditedPostNew = select('core/editor').isEditedPostNew;
         return {
             meta: {...currentMeta, ...editedMeta},
+            isNew: isEditedPostNew,
         };
     }),
     withDispatch((dispatch) => ({
@@ -49,6 +55,14 @@ const composedHideFeaturedImage = compose([
                 cybocfi_hide_featured_image: value,
             };
             dispatch('core/editor').editPost({meta});
+        },
+        getValue(isNew, meta) {
+            if (isNew() && !dirty) {
+                dirty = true;
+                this.updateHideFeaturedImage(cybocfi.hideByDefault, meta);
+                return cybocfi.hideByDefault;
+            }
+            return meta.cybocfi_hide_featured_image;
         },
     })),
 ])(HideFeaturedImage);

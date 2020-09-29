@@ -3,7 +3,7 @@
 Plugin Name: Conditionally display featured image on singular pages and posts
 Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
-Version: 2.3.1
+Version: 2.4.0
 Author: Cyrill Bolliger
 Text Domain: conditionally-display-featured-image-on-singular-pages
 License: GPLv2
@@ -24,7 +24,7 @@ define( 'CYBOCFI_PLUGIN_PATH', dirname( __FILE__ ) );
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '2.3.1' );
+define( 'CYBOCFI_VERSION', '2.4.0' );
 
 /**
  * Plugin prefix
@@ -64,9 +64,11 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
             /*
              * Allow to disable the plugin for certain post types.
              *
+             * The filter function must return false to disable the plugin.
+             *
              * @since 2.3.0
              *
-             * @param boolean $post_type The current post type.
+             * @param string $post_type The current post type.
              */
             $enabled = apply_filters( 'cybocfi_post_type', $post_type, true );
 
@@ -156,6 +158,27 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
                     'cybocfiL10n',
                     array( 'featuredImageCheckboxLabel' => $this->label )
             );
+
+            wp_add_inline_script(
+                'cybocfi-script',
+                $this->get_block_editor_inline_script(),
+                'before'
+            );
+		}
+
+        /**
+         * Return the JS code, that will be inlined before the block editor script
+         *
+         * Add any data, that must be accessible in the block editor, here.
+         *
+         * @return string
+         */
+        private function get_block_editor_inline_script() {
+		    $data = array(
+		            'hideByDefault' => $this->get_default_checkbox_value(),
+            );
+
+            return 'var cybocfi = ' . json_encode($data) . ';';
 		}
 
 		/**
@@ -234,7 +257,6 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 
 			// insert a nonce
 			wp_nonce_field( CYBOCFI_PLUGIN_PREFIX . 'save_custom_meta', CYBOCFI_PLUGIN_PREFIX . '_nonce' );
-			$stored_meta = get_post_meta( $post->ID );
 
 			// insert form
 			?>
@@ -244,14 +266,33 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
                            value="no">
                     <input type="checkbox" name="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>"
                            id="<?php echo CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image'; ?>"
-                           value="yes" <?php if ( isset ( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) {
-						checked( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ][0], 'yes' );
-					} ?> />
+                           value="yes" <?php $this->the_checked_tag() ?> />
 					<?php echo $this->label ?>
                 </label>
             </p>
 			<?php // the custom .inside div will be closed by the core
 		}
+
+        /**
+         * Echo the featured image checkbox' checked tag if needed.
+         *
+         * The checked tag is omitted, if it should not be checked.
+         */
+        public function the_checked_tag() {
+            global $post;
+
+            $new = get_current_screen()->action === 'add';
+
+            if ( $new ) {
+                checked( $this->get_default_checkbox_value() );
+            } else {
+                $stored_meta = get_post_meta( $post->ID );
+
+                if ( isset ( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) {
+                    checked( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ][0], 'yes' );
+                }
+            }
+        }
 
 		/**
 		 * Save the custom meta input
@@ -277,6 +318,29 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 				update_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', $value );
 			}
 		}
+
+        /**
+         * Add a filter to control if the featured image should be hidden by
+         * default for new posts and pages.
+         *
+         * @return boolean
+         */
+        private function get_default_checkbox_value() {
+            /*
+             * Filter hook to hide the image by default for any new posts and
+             * pages (preselecting the checkbox).
+             *
+             * The filter function must return true to hide the image by default.
+             *
+             * @since 2.4.0
+             *
+             * @param boolean $enabled  The current default value.
+             * @param string $post_type The current post type.
+             */
+            $enabled = apply_filters( 'cybocfi_hide_by_default', false, get_current_screen()->post_type );
+
+            return true === $enabled; // check explicitly for true to handle misused filter functions.
+        }
 	}
 }
 
