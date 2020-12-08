@@ -15,7 +15,7 @@ Choose if the featured image should be displayed in the single post/page view or
 If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()` or `wp_get_attachment_image()` to be sure it will work.
 
 = Description =
-This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page but you don\'t want the featured image to be shown on every posts view itself.
+This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page but you don't want the featured image to be shown on every posts view itself.
 
 The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
 
@@ -31,7 +31,7 @@ Yes. Just add the following line to your functions.php:
 `
 add_filter('cybocfi_hide_by_default', '__return_true');
 `
-All new posts and pages will now hide the featured image by default (checkbox is checked by default). Existing posts and pages won\'t be changed.
+All *new* posts and pages will now hide the featured image by default (checkbox is checked by default). Existing posts and pages won't be changed.
 
 You may also set different default values depending on the post type:
 `
