@@ -39,7 +39,12 @@ define( 'CYBOCFI_PLUGIN_PREFIX', 'cybocfi' );
 if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 
 	class Cybocfi_Admin {
-        /**
+		/**
+		 * @var Cybocfi_Admin
+		 */
+		private static $instance;
+
+	    /**
          * The label of the checkbox in the featured image meta box.
          *
          * @string
@@ -47,10 +52,21 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 	    private $label;
 
 		/**
-		 * Starting point of the magic
+		 * Disallow regular instantiation.
 		 */
-		public function run() {
-			add_action( 'current_screen', array($this, 'check_post_type_and_load') );
+		private function __construct() {}
+
+		/**
+		 * Constructor for singleton.
+         *
+         * @return Cybocfi_Admin
+		 */
+		public static function get_instance(  ) {
+            if ( ! self::$instance ) {
+                self::$instance = new Cybocfi_Admin();
+            }
+
+            return self::$instance;
 		}
 
         /**
@@ -61,20 +77,81 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
          */
 		public function check_post_type_and_load( $current_screen ) {
 		    $post_type = $current_screen->post_type;
-            /*
-             * Allow to disable the plugin for certain post types.
-             *
-             * The filter function must return false to disable the plugin.
-             *
-             * @since 2.3.0
-             *
-             * @param string $post_type The current post type.
-             */
-            $enabled = apply_filters( 'cybocfi_post_type', $post_type, true );
+            $enabled = $this->is_enabled_for_post_type( $post_type );
 
-            if ( false !== $enabled ) { // check for not false so it will work if the filter doesn't return anything
+            if ( $enabled ) {
                 $this->initialize_metabox();
             }
+        }
+
+		/**
+		 * Wrapper for 'cybocfi_post_type' filter.
+         *
+         * Only returns false if the filter returns false. Any other falsy
+         * values returned by the filter are considered as true (be resilient to
+         * flaws in filter usage).
+         *
+         * @param string $post_type
+		 *
+		 * @return bool
+		 */
+		private function is_enabled_for_post_type( $post_type ) {
+			/*
+			 * Allow to disable the plugin for certain post types.
+			 *
+			 * The filter function must return false to disable the plugin.
+			 *
+			 * @since 2.3.0
+			 *
+			 * @param string $post_type The current post type.
+			 */
+			$enabled = apply_filters( 'cybocfi_post_type', $post_type, true );
+
+			// check for not false so the plugin will still work if the filter
+            // doesn't return anything
+			return false !== $enabled;
+        }
+
+		/**
+		 * Mark the featured image as hidden for programmatically added posts,
+         * if the default is set to be hidden ('cybocfi_hide_by_default'
+         * filter).
+         *
+         * @since 2.5.0
+         *
+         * @param int $id
+		 * @param WP_Post $post
+		 * @param bool $update
+		 */
+		public function handle_imports( $id, $post, $update ) {
+            // only hide the featured image for new posts. Existing posts must
+            // be changed explicitly.
+		    if ( $update ) {
+                return;
+            }
+
+		    // only if the featured image should be hidden by default, we have
+            // to add the flag. see: cybocfi_hide_by_default filter
+            if ( ! $this->get_default_checkbox_value( $post->post_type ) ) {
+                return;
+            }
+
+            // check, that we do only add the flag to post types that should be
+            // handled by this plugin. see cybocfi_post_type filter
+			if ( ! $this->is_enabled_for_post_type( $post->post_type ) ) {
+                return;
+			}
+
+			// ensure, we do not overwrite the flag if set explicitly.
+            // (update_post_meta() is called before the post is actually
+            // inserted and thus the save_post action is triggered).
+            $meta = get_post_meta( $id );
+            $has_hide_value = array_key_exists(CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', $meta);
+            if ( $has_hide_value ) {
+                return;
+            }
+
+			$this->save_hide_flag( $id, true );
         }
 
         /**
@@ -314,18 +391,36 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 
 			// save input
 			if ( isset( $_POST[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) {
-				$value = 'yes' === $_POST[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ? 'yes' : '';
-				update_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', $value );
+				$value = 'yes' === $_POST[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ];
+				$this->save_hide_flag( $post_id, $value );
 			}
+		}
+
+		/**
+		 * Persist the checkbox value.
+         *
+         * @param int $post_id The post id.
+         * @param bool $bool True to hide the featured image.
+		 */
+		private function save_hide_flag( $post_id, $bool ) {
+			$value = $bool ? 'yes' : '';
+			update_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', $value );
 		}
 
         /**
          * Add a filter to control if the featured image should be hidden by
          * default for new posts and pages.
          *
+         * @param string $post_type The current post type. If not provided, it
+         * is detected by get_current_screen(). Thus, it must be given for posts
+         * that are inserted programmatically.
+         *
          * @return boolean
          */
-        private function get_default_checkbox_value() {
+        private function get_default_checkbox_value( $post_type = null ) {
+            if (null === $post_type) {
+                $post_type = get_current_screen()->post_type;
+            }
             /*
              * Filter hook to hide the image by default for any new posts and
              * pages (preselecting the checkbox).
@@ -337,7 +432,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
              * @param boolean $enabled  The current default value.
              * @param string $post_type The current post type.
              */
-            $enabled = apply_filters( 'cybocfi_hide_by_default', false, get_current_screen()->post_type );
+            $enabled = apply_filters( 'cybocfi_hide_by_default', false, $post_type );
 
             return true === $enabled; // check explicitly for true to handle misused filter functions.
         }
@@ -482,10 +577,9 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 /**
  * Run admin code
  */
-if ( is_admin() ) {
-	$cybocfi_admin = new Cybocfi_Admin();
-	$cybocfi_admin->run();
-}
+add_action( 'current_screen', array( Cybocfi_Admin::get_instance(), 'check_post_type_and_load') );
+add_action( 'save_post', array( Cybocfi_Admin::get_instance(), 'handle_imports'), 10, 3 );
+add_action( 'rest_api_init', array( Cybocfi_Admin::class, 'expose_meta_field_to_rest_api' ) );
 
 /**
  * Run frontend code
@@ -494,8 +588,3 @@ if ( ! is_admin() ) {
 	$cybocfi_frontend = new Cybocfi_Frontend();
 	$cybocfi_frontend->run();
 }
-
-/**
- * Run this to save the block editor value
- */
-add_action( 'rest_api_init', array( Cybocfi_Admin::class, 'expose_meta_field_to_rest_api' ) );
