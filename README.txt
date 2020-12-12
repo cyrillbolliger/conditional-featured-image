@@ -85,6 +85,12 @@ add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 2. Frontend
 
 == Changelog ==
+= 2.5.0 =
+* Respect the `cybocfi_hide_by_default` filter for programmatically added posts
+* Small refactorings
+* Tested up to WordPress 5.6.0
+* Updated dependencies
+
 = 2.4.0 =
 * Added filter to hide featured images by default
 * Tested up to WordPress 5.5.1
