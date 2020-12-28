@@ -463,6 +463,19 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
             add_action('loop_start', function ( $wp_query ) {
                 if ( $wp_query->is_main_query() ) {
                     add_action( 'the_post', array( &$this, 'set_visibility' ) );
+                } else {
+	                /*
+	                 * Remove the filters again, if it's not the main query but
+                     * the filters have already been applied. This is the case,
+                     * if the current query is executed after the main query.
+                     *
+                     * @since 2.5.1
+	                 */
+	                if ( has_filter( 'the_post', array( &$this, 'set_visibility' ) ) ) {
+		                remove_action( 'the_post', array( &$this, 'set_visibility' ) );
+		                remove_filter( 'get_post_metadata', array( &$this, 'hide_featured_image' ) );
+		                $this->post_id = null;
+	                }
                 }
             });
 
