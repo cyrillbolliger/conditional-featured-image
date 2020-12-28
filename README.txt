@@ -85,6 +85,10 @@ add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 2. Frontend
 
 == Changelog ==
+= 2.5.1 =
+* Fix: Do not remove the featured image in queries executed after the main query
+* Updated dependencies
+
 = 2.5.0 =
 * Respect the `cybocfi_hide_by_default` filter for programmatically added posts
 * Small refactorings
