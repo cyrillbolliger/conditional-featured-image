@@ -489,7 +489,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 			/**
 			 * Support for the twentynineteen theme
              *
-             * @since 2.5.2
+             * @since 2.6.0
 			 */
             add_filter( 'twentynineteen_can_show_post_thumbnail', array( &$this, 'twentynineteen' ) );
 		}
