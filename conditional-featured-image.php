@@ -485,6 +485,28 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
              * @since 2.1.0
              */
             add_filter('wpseo_schema_graph_pieces', array( &$this, 'set_schema_visibility' ), 10, 2 );
+
+			/**
+			 * Support for the twentynineteen theme
+             *
+             * @since 2.5.2
+			 */
+            add_filter( 'twentynineteen_can_show_post_thumbnail', array( &$this, 'twentynineteen' ) );
+		}
+
+		/**
+		 * Support for the twentynineteen theme
+         *
+         * @param bool $can_show_thumbnail
+		 *
+		 * @return bool
+		 */
+		public function twentynineteen( $can_show_thumbnail ) {
+			if ( is_singular() && is_main_query() && $this->is_image_marked_hidden( get_the_ID() ) ) {
+				return false;
+			}
+
+			return $can_show_thumbnail;
 		}
 
         /**
