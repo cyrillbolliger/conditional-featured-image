@@ -85,6 +85,9 @@ add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 2. Frontend
 
 == Changelog ==
+= 2.6.0 =
+* Added support for the twentynineteen theme
+
 = 2.5.1 =
 * Fix: Do not remove the featured image in queries executed after the main query
 * Updated dependencies
