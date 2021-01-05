@@ -85,6 +85,10 @@ add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 2. Frontend
 
 == Changelog ==
+= 2.7.0 =
+* Added support for the Custom Post Type UI plugin
+* Updated dependencies
+
 = 2.6.0 =
 * Added support for the twentynineteen theme
 
