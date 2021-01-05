@@ -436,6 +436,33 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 
             return true === $enabled; // check explicitly for true to handle misused filter functions.
         }
+
+		/**
+		 * Add support for the CPT UI plugin
+         *
+         * The plugin needs support for 'custom-fields' when the post type is
+         * registered {@see register_post_type()}. This function adds this
+         * support for any post type that has this plugin enabled and that does
+         * not explicitly disable any support (passes false to the support arg
+         * of the register_post_type() function).
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param array  $value     Empty array to add supports keys to.
+		 * @param string $name      Post type slug being registered.
+         *
+         * @return array
+         *
+         * @link https://developer.wordpress.org/reference/functions/register_post_type/
+         * @link https://github.com/WebDevStudios/custom-post-type-ui/blob/master/custom-post-type-ui.php
+		 */
+		public function cptui_compatibility( $value, $name ) {
+		    if ( $this->is_enabled_for_post_type( $name ) ) {
+			    return array_merge( $value, array( 'custom-fields' ) );
+            }
+
+		    return $value;
+        }
 	}
 }
 
@@ -615,6 +642,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 add_action( 'current_screen', array( Cybocfi_Admin::get_instance(), 'check_post_type_and_load') );
 add_action( 'save_post', array( Cybocfi_Admin::get_instance(), 'handle_imports'), 10, 3 );
 add_action( 'rest_api_init', array( Cybocfi_Admin::class, 'expose_meta_field_to_rest_api' ) );
+add_action( 'cptui_user_supports_params', array( Cybocfi_Admin::get_instance(), 'cptui_compatibility' ), 10, 3 );
 
 /**
  * Run frontend code
