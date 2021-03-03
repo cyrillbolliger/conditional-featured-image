@@ -3,8 +3,8 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 5.6.0
-Stable tag: 2.7.0
+Tested up to: 5.7.0
+Stable tag: 2.7.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,10 @@ add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 2. Frontend
 
 == Changelog ==
+= 2.7.1 =
+* Tested up to WordPress 5.7
+* Updated dependencies
+
 = 2.7.0 =
 * Added support for the Custom Post Type UI plugin
 * Updated dependencies
