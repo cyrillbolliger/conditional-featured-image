@@ -76,6 +76,9 @@ function cybocfi_set_featured_image_label( $label ) {
 add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 `
 
+= I can't save posts in WordPress 5.7.0 =
+A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) may render this plugin unusable if a second plugin uses post meta values in a certan way. People who are affected by this problem see the following error message "Updating failed. Could not delete meta value from database.". As the issue is related to WordPress core the workaround is to downgrade to WordPress 5.6.2 - or to disable the conflicting second plugin. To our current knowledge, only very few users are affected by this defect. The Conditionally display featured image on singular posts and pages plugin itself works as expected for WordPress 5.7.0 and the issue may only appear if a second plugin triggers the bug in WordPress core.
+
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the `Plugins` screen in WordPress
