@@ -3,8 +3,8 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 5.7.0
-Stable tag: 2.7.1
+Tested up to: 5.8.0
+Stable tag: 2.8.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,22 @@ The plugin adds a simple checkbox to the featured image panel (or meta box if yo
 
 == Frequently asked questions ==
 = The plugin doesn't work with my theme. What can I do? =
-Either
+Typically there are two possibilities why the plugin is not compatible with your theme:
+
+1) The theme loads the featured image before the loop (e.g. in the header).
+2) The theme makes a custom call to load the featured image.
+
+**In case 1** you can initialize the plugin early. To do so, add the following snippet to your functions.php:
+```
+function cybocfi_set_startup_hook() {
+    return 'get_header';
+}
+
+add_filter( 'cybocfi_startup_hook', 'cybocfi_set_startup_hook' );
+```
+Be aware, that this might have some side effects: e.g. it might also hide the featured image from plugins that would normally see it, like SEO plugins et al.
+
+**In case 2** either
 
 *   kindly ask the theme developer to use one of the dedicated WordPress functions (`wp_get_attachment_image()`, `get_the_post_thumbnail()`, `the_post_thumbnail()`) to load the featured image in the singular views.
 *   or create a [child theme](https://developer.wordpress.org/themes/advanced-topics/child-themes/) that replaces the call, that loads the featured image, with one of the methods listed above.
@@ -77,7 +92,7 @@ add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 `
 
 = I can't save posts in WordPress 5.7.0 =
-A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) may render this plugin unusable if a second plugin uses post meta values in a certan way. People who are affected by this problem see the following error message "Updating failed. Could not delete meta value from database.". As the issue is related to WordPress core the workaround is to downgrade to WordPress 5.6.2 - or to disable the conflicting second plugin. To our current knowledge, only very few users are affected by this defect. The Conditionally display featured image on singular posts and pages plugin itself works as expected for WordPress 5.7.0 and the issue may only appear if a second plugin triggers the bug in WordPress core.
+A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) may render this plugin unusable if a second plugin uses post meta values in a certain way. People who are affected by this problem see the following error message "Updating failed. Could not delete meta value from database.". As the issue is related to WordPress core the workaround is to downgrade to WordPress 5.6.2 or to upgrade to WordPress 5.7.1. To our current knowledge, only very few users are affected by this defect. The Conditionally display featured image on singular posts and pages plugin itself works as expected for WordPress 5.7.0 and the issue may only appear if a second plugin triggers the bug in WordPress core.
 
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
@@ -88,6 +103,12 @@ A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) m
 2. Frontend
 
 == Changelog ==
+= 2.8.0 =
+* Added hook for early initialization
+* Extended FAQ
+* Small refactorings
+* Updated dependencies
+
 = 2.7.1 =
 * Tested up to WordPress 5.7
 * Updated dependencies

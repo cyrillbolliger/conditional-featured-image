@@ -3,7 +3,7 @@
 Plugin Name: Conditionally display featured image on singular pages and posts
 Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
-Version: 2.7.1
+Version: 2.8.0
 Author: Cyrill Bolliger
 Text Domain: conditionally-display-featured-image-on-singular-pages
 License: GPLv2
@@ -19,12 +19,12 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 /**
  * Abspath to plugins directory
  */
-define( 'CYBOCFI_PLUGIN_PATH', dirname( __FILE__ ) );
+define( 'CYBOCFI_PLUGIN_PATH', __DIR__ );
 
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '2.7.1' );
+define( 'CYBOCFI_VERSION', '2.8.0' );
 
 /**
  * Plugin prefix
@@ -96,7 +96,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 * @return bool
 		 */
 		private function is_enabled_for_post_type( $post_type ) {
-			/*
+			/**
 			 * Allow to disable the plugin for certain post types.
 			 *
 			 * The filter function must return false to disable the plugin.
@@ -186,7 +186,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
                 'conditionally-display-featured-image-on-singular-pages'
             );
 
-            /*
+            /**
              * Filter the label of the checkbox in the featured image meta box.
              *
              * @since 2.2.0
@@ -421,7 +421,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
             if (null === $post_type) {
                 $post_type = get_current_screen()->post_type;
             }
-            /*
+            /**
              * Filter hook to hide the image by default for any new posts and
              * pages (preselecting the checkbox).
              *
@@ -470,6 +470,29 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 
 	class Cybocfi_Frontend {
 		/**
+		 * @var Cybocfi_Frontend
+		 */
+		private static $instance;
+
+		/**
+		 * Disallow regular instantiation.
+		 */
+		private function __construct() {}
+
+		/**
+		 * Constructor for singleton.
+		 *
+		 * @return Cybocfi_Frontend
+		 */
+		public static function get_instance(  ) {
+			if ( ! self::$instance ) {
+				self::$instance = new Cybocfi_Frontend();
+			}
+
+			return self::$instance;
+		}
+
+		/**
 		 * The id of the post, where the image shall be removed
 		 *
 		 * @var int
@@ -480,31 +503,26 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * Starting point of the magic
 		 */
 		public function run() {
-            /**
-             * Take loop_start as entry point since it doesn't affect the header
-             * stuff, where the featured image might be used for the open graph
-             * or a twitter card.
+			/**
+			 * Allow customizing the hook, at which the plugin starts hiding the
+			 * featured image.
+			 *
+			 * The default action hook, 'loop_start', doesn't affect the header
+			 * stuff, where the featured image might be used for the open graph
+			 * or a twitter card.
+			 *
+			 * As some themes load the featured image already in the header, you
+			 * might have to go with an earlier hook like 'get_header' or even
+			 * 'wp'. Be aware, that this might have some side effects, as
+			 * it might also hide the featured image for plugins that would
+			 * normally need it, like SEO plugins et al.
+			 *
+			 * @since 2.8.0
              *
-             * @since 2.1.0
-             */
-            add_action('loop_start', function ( $wp_query ) {
-                if ( $wp_query->is_main_query() ) {
-                    add_action( 'the_post', array( &$this, 'set_visibility' ) );
-                } else {
-	                /*
-	                 * Remove the filters again, if it's not the main query but
-                     * the filters have already been applied. This is the case,
-                     * if the current query is executed after the main query.
-                     *
-                     * @since 2.5.1
-	                 */
-	                if ( has_filter( 'the_post', array( &$this, 'set_visibility' ) ) ) {
-		                remove_action( 'the_post', array( &$this, 'set_visibility' ) );
-		                remove_filter( 'get_post_metadata', array( &$this, 'hide_featured_image' ) );
-		                $this->post_id = null;
-	                }
-                }
-            });
+             * @param string $startup_hook WordPress action
+			 */
+			$startup_hook = apply_filters( 'cybocfi_startup_hook', 'loop_start' );
+			add_action( $startup_hook, array( &$this, 'set_visibility' ) );
 
             /**
              * Remove the featured image from Yoast SEO's schema.org if needed.
@@ -550,10 +568,10 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 
             if ( $this->is_image_marked_hidden( $post_id ) ) {
                 return $this->remove_mainimage_schema_block( $pieces );
-            } else {
-                return $pieces;
             }
-		}
+
+	        return $pieces;
+        }
 
         /**
          * Remove the Yoast SEO schema block that carries the main image
@@ -564,7 +582,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
          */
         private function remove_mainimage_schema_block( $pieces ) {
             foreach($pieces as $key => $piece) {
-                if ($piece instanceof WPSEO_Schema_MainImage) {
+                if ($piece instanceof \Yoast\WP\SEO\Generators\Schema\Main_Image) {
                     unset($pieces[$key]);
                     break;
                 }
@@ -576,19 +594,29 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		/**
 		 * Hide the featured image on single posts where the corresponding flag
 		 * was set in the backend.
-		 *
-		 * @param WP_Post $post as passed by the the_post action
 		 */
-		public function set_visibility( $post ) {
+		public function set_visibility() {
+			/**
+             * Remove the filters, if it's not the main query. This is the case,
+             * if the current query is executed after the main query.
+             *
+             * @since 2.5.1
+             */
+		    if ( ! is_main_query() ) {
+			    $this->remove_featured_image_filter();
+			    return;
+            }
+
+		    $post_id = get_the_ID();
 
 			// abort if it's not a single post
-			if ( ! ( is_single( $post->ID ) || is_page( $post->ID ) ) ) {
+			if ( ! ( is_single( $post_id ) || is_page( $post_id ) ) ) {
 				return;
 			}
 
 			// hide the featured image if it was set so
-			if ( $this->is_image_marked_hidden( $post->ID ) ) {
-				$this->filter_featured_image( $post->ID );
+			if ( $this->is_image_marked_hidden( $post_id ) ) {
+				$this->add_featured_image_filter( $post_id );
 			}
 		}
 
@@ -611,9 +639,17 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @param int $post_id ID of the post who's featured image shall be
 		 * removed
 		 */
-		public function filter_featured_image( $post_id ) {
+		public function add_featured_image_filter( $post_id ) {
 			$this->post_id = $post_id;
 			add_filter( 'get_post_metadata', array( &$this, 'hide_featured_image' ), 10, 3 );
+		}
+
+		/**
+		 * Filter the posts metadata to remove the image
+		 */
+		public function remove_featured_image_filter() {
+			remove_filter( 'get_post_metadata', array( &$this, 'hide_featured_image' ) );
+			$this->post_id = null;
 		}
 
 		/**
@@ -624,14 +660,16 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @param int $object_id
 		 * @param string $meta_key
 		 *
-		 * @return boolean
+		 * @return mixed
 		 * @see has_post_thumbnail()
 		 *
 		 */
 		public function hide_featured_image( $value, $object_id, $meta_key ) {
-			if ( '_thumbnail_id' == $meta_key && $object_id === $this->post_id ) {
+			if ( '_thumbnail_id' === $meta_key && $object_id === $this->post_id ) {
 				return false;
 			}
+
+			return $value;
 		}
 	}
 }
@@ -648,6 +686,5 @@ add_action( 'cptui_user_supports_params', array( Cybocfi_Admin::get_instance(), 
  * Run frontend code
  */
 if ( ! is_admin() ) {
-	$cybocfi_frontend = new Cybocfi_Frontend();
-	$cybocfi_frontend->run();
+	add_action( 'init', array( Cybocfi_Frontend::get_instance(), 'run' ) );
 }
