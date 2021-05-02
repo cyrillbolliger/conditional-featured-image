@@ -17,7 +17,6 @@ services:
       - "wp:/var/www/html:rw"
       - ".:/var/www/html/wp-content/plugins/conditional-featured-image:ro"
       - "./addon-php.ini:/usr/local/etc/php/conf.d/addon-php.ini:ro"
-      - "../wordpress-src/wp-content/plugins/wp-recipe-maker:/var/www/html/wp-content/plugins/wp-recipe-maker"
 
   mysql:
     image: "mariadb:latest"

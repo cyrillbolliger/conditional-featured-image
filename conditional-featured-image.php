@@ -96,7 +96,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 * @return bool
 		 */
 		private function is_enabled_for_post_type( $post_type ) {
-			/*
+			/**
 			 * Allow to disable the plugin for certain post types.
 			 *
 			 * The filter function must return false to disable the plugin.
@@ -186,7 +186,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
                 'conditionally-display-featured-image-on-singular-pages'
             );
 
-            /*
+            /**
              * Filter the label of the checkbox in the featured image meta box.
              *
              * @since 2.2.0
@@ -421,7 +421,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
             if (null === $post_type) {
                 $post_type = get_current_screen()->post_type;
             }
-            /*
+            /**
              * Filter hook to hide the image by default for any new posts and
              * pages (preselecting the checkbox).
              *
@@ -550,10 +550,10 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 
             if ( $this->is_image_marked_hidden( $post_id ) ) {
                 return $this->remove_mainimage_schema_block( $pieces );
-            } else {
-                return $pieces;
             }
-		}
+
+	        return $pieces;
+        }
 
         /**
          * Remove the Yoast SEO schema block that carries the main image
@@ -624,14 +624,16 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @param int $object_id
 		 * @param string $meta_key
 		 *
-		 * @return boolean
+		 * @return mixed
 		 * @see has_post_thumbnail()
 		 *
 		 */
 		public function hide_featured_image( $value, $object_id, $meta_key ) {
-			if ( '_thumbnail_id' == $meta_key && $object_id === $this->post_id ) {
+			if ( '_thumbnail_id' === $meta_key && $object_id === $this->post_id ) {
 				return false;
 			}
+
+			return $value;
 		}
 	}
 }
