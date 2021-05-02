@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 /**
  * Abspath to plugins directory
  */
-define( 'CYBOCFI_PLUGIN_PATH', dirname( __FILE__ ) );
+define( 'CYBOCFI_PLUGIN_PATH', __DIR__ );
 
 /**
  * Version number (don't forget to change it also in the header)
