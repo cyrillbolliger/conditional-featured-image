@@ -27,13 +27,13 @@ Typically there are two possibilities why the plugin is not compatible with your
 2) The theme makes a custom call to load the featured image.
 
 **In case 1** you can initialize the plugin early. To do so, add the following snippet to your functions.php:
-```
+`
 function cybocfi_set_startup_hook() {
     return 'get_header';
 }
 
 add_filter( 'cybocfi_startup_hook', 'cybocfi_set_startup_hook' );
-```
+`
 Be aware, that this might have some side effects: e.g. it might also hide the featured image from plugins that would normally see it, like SEO plugins et al.
 
 **In case 2** either
