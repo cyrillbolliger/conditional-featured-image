@@ -103,6 +103,12 @@ A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) m
 2. Frontend
 
 == Changelog ==
+= 2.8.0 =
+* Added hook for early initialization
+* Extended FAQ
+* Small refactorings
+* Updated dependencies
+
 = 2.7.1 =
 * Tested up to WordPress 5.7
 * Updated dependencies
