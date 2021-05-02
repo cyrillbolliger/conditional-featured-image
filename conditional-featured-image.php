@@ -582,7 +582,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
          */
         private function remove_mainimage_schema_block( $pieces ) {
             foreach($pieces as $key => $piece) {
-                if ($piece instanceof WPSEO_Schema_MainImage) {
+                if ($piece instanceof \Yoast\WP\SEO\Generators\Schema\Main_Image) {
                     unset($pieces[$key]);
                     break;
                 }
