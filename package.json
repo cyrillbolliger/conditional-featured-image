@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/cyrillbolliger/conditional-featured-image/issues"
   },
-  "homepage": "https://github.com/cyrillbolliger/conditional-featured-image#readme",
+  "homepage": "https://wordpress.org/plugins/conditionally-display-featured-image-on-singular-pages/",
   "devDependencies": {
     "@wordpress/scripts": "^16.0.0"
   },
