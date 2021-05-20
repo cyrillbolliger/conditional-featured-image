@@ -41,6 +41,9 @@ Be aware, that this might have some side effects: e.g. it might also hide the fe
 *   kindly ask the theme developer to use one of the dedicated WordPress functions (`wp_get_attachment_image()`, `get_the_post_thumbnail()`, `the_post_thumbnail()`) to load the featured image in the singular views.
 *   or create a [child theme](https://developer.wordpress.org/themes/advanced-topics/child-themes/) that replaces the call, that loads the featured image, with one of the methods listed above.
 
+= Is this plugin GDPR compliant? =
+This plugin does not process or store any personal information. Hence, it is fully GDPR compliant without any further ado.
+
 = Can I hide featured images by default? =
 Yes. Just add the following line to your functions.php:
 `
