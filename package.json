@@ -1,6 +1,6 @@
 {
   "name": "conditionally-display-featured-image-on-singular-pages-and-posts",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.",
   "main": "src/index.js",
   "scripts": {
@@ -22,15 +22,15 @@
   "bugs": {
     "url": "https://github.com/cyrillbolliger/conditional-featured-image/issues"
   },
-  "homepage": "https://github.com/cyrillbolliger/conditional-featured-image#readme",
+  "homepage": "https://wordpress.org/plugins/conditionally-display-featured-image-on-singular-pages/",
   "devDependencies": {
-    "@wordpress/scripts": "^15.0.1"
+    "@wordpress/scripts": "^16.0.0"
   },
   "dependencies": {
-    "@wordpress/components": "^13.0.3",
-    "@wordpress/compose": "^3.24.4",
-    "@wordpress/data": "^4.26.7",
-    "@wordpress/element": "^2.19.1",
-    "@wordpress/hooks": "^2.11.1"
+    "@wordpress/components": "^14.0.0",
+    "@wordpress/compose": "^4.0.0",
+    "@wordpress/data": "^5.0.0",
+    "@wordpress/element": "^3.0.0",
+    "@wordpress/hooks": "^3.0.0"
   }
 }

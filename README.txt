@@ -3,8 +3,8 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 5.8.0
-Stable tag: 2.8.0
+Tested up to: 5.8.2
+Stable tag: 2.8.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,19 +27,22 @@ Typically there are two possibilities why the plugin is not compatible with your
 2) The theme makes a custom call to load the featured image.
 
 **In case 1** you can initialize the plugin early. To do so, add the following snippet to your functions.php:
-```
+`
 function cybocfi_set_startup_hook() {
     return 'get_header';
 }
 
 add_filter( 'cybocfi_startup_hook', 'cybocfi_set_startup_hook' );
-```
+`
 Be aware, that this might have some side effects: e.g. it might also hide the featured image from plugins that would normally see it, like SEO plugins et al.
 
 **In case 2** either
 
 *   kindly ask the theme developer to use one of the dedicated WordPress functions (`wp_get_attachment_image()`, `get_the_post_thumbnail()`, `the_post_thumbnail()`) to load the featured image in the singular views.
 *   or create a [child theme](https://developer.wordpress.org/themes/advanced-topics/child-themes/) that replaces the call, that loads the featured image, with one of the methods listed above.
+
+= Is this plugin GDPR compliant? =
+This plugin does not process or store any personal information. Hence, it is fully GDPR compliant without any further ado.
 
 = Can I hide featured images by default? =
 Yes. Just add the following line to your functions.php:
@@ -103,6 +106,11 @@ A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) m
 2. Frontend
 
 == Changelog ==
+= 2.8.1 =
+* Extended FAQ
+* Updated dependencies
+* Tested up to WordPress 5.8.2
+
 = 2.8.0 =
 * Added hook for early initialization
 * Extended FAQ
