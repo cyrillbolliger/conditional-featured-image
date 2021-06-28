@@ -641,20 +641,20 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 */
 		public function add_featured_image_filter( $post_id ) {
 			$this->post_id = $post_id;
-			add_filter( 'get_post_metadata', array( &$this, 'hide_featured_image' ), 10, 3 );
+			add_filter( 'get_post_metadata', array( &$this, 'hide_featured_image_in_the_loop' ), 10, 3 );
 		}
 
 		/**
 		 * Filter the posts metadata to remove the image
 		 */
 		public function remove_featured_image_filter() {
-			remove_filter( 'get_post_metadata', array( &$this, 'hide_featured_image' ) );
+			remove_filter( 'get_post_metadata', array( &$this, 'hide_featured_image_in_the_loop' ) );
 			$this->post_id = null;
 		}
 
 		/**
-		 * Set the thumbnail_id to false to make the wordpress core believe
-		 * there is no thumbnail/featured image
+		 * Set the thumbnail_id to false if in the loop, to make the wordpress
+         * core believe there is no thumbnail/featured image
 		 *
 		 * @param mixed $value given by the get_post_metadata filter
 		 * @param int $object_id
@@ -664,8 +664,11 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @see has_post_thumbnail()
 		 *
 		 */
-		public function hide_featured_image( $value, $object_id, $meta_key ) {
-			if ( '_thumbnail_id' === $meta_key && $object_id === $this->post_id ) {
+		public function hide_featured_image_in_the_loop( $value, $object_id, $meta_key ) {
+			if ( '_thumbnail_id' === $meta_key
+                 && $object_id === $this->post_id
+                 && in_the_loop()
+            ) {
 				return false;
 			}
 
