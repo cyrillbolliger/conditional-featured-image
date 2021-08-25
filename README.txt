@@ -4,7 +4,7 @@ Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post,
 Requires at least: 4.6
 Requires PHP: 5.6
 Tested up to: 5.8.2
-Stable tag: 2.8.1
+Stable tag: 2.8.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -106,6 +106,11 @@ A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) m
 2. Frontend
 
 == Changelog ==
+= 2.8.2 =
+* Fixed bug that was hiding the featured image in the latest posts widget. Props to @molcsa for pointing this out.
+* Updated dependencies
+* Tested up to WordPress
+
 = 2.8.1 =
 * Extended FAQ
 * Updated dependencies
