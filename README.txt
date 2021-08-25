@@ -109,7 +109,6 @@ A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) m
 = 2.8.2 =
 * Fixed bug that was hiding the featured image in the latest posts widget. Props to @molcsa for pointing this out.
 * Updated dependencies
-* Tested up to WordPress
 
 = 2.8.1 =
 * Extended FAQ
