@@ -13,6 +13,7 @@ Choose if the featured image should be displayed in the single post/page view or
 == Description ==
 = Important notice =
 If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()` or `wp_get_attachment_image()` to be sure it will work.
+By default, the plugin also only hides the featured image, if it is loaded within the loop. See the FAQ on how to use the plugin if you theme loads the featured image outside the loop.
 
 = Description =
 This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page but you don't want the featured image to be shown on every posts view itself.
@@ -26,15 +27,16 @@ Typically there are two possibilities why the plugin is not compatible with your
 1) The theme loads the featured image before the loop (e.g. in the header).
 2) The theme makes a custom call to load the featured image.
 
-**In case 1** you can initialize the plugin early. To do so, add the following snippet to your functions.php:
+**In case 1** you can initialize the plugin early and disable the in_the_loop check. To do so, add the following snippet to your functions.php:
 `
 function cybocfi_set_startup_hook() {
     return 'get_header';
 }
 
 add_filter( 'cybocfi_startup_hook', 'cybocfi_set_startup_hook' );
+add_filter( 'cybocfi_only_hide_in_the_loop', '__return_false' );
 `
-Be aware, that this might have some side effects: e.g. it might also hide the featured image from plugins that would normally see it, like SEO plugins et al.
+Be aware, that this might have some side effects: e.g. it might also hide the featured image from plugins that would normally see it, like SEO plugins or the 'latest posts' plugin.
 
 **In case 2** either
 
@@ -106,6 +108,10 @@ A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) m
 2. Frontend
 
 == Changelog ==
+
+= 2.9.0 =
+* Added filter to bypass the in_the_loop() test so the plugin can be made compatible with themes that load the featured image outside the main loop.
+
 = 2.8.2 =
 * Fixed bug that was hiding the featured image in the latest posts widget. Props to @molcsa for pointing this out.
 * Updated dependencies
