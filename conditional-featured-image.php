@@ -3,7 +3,7 @@
 Plugin Name: Conditionally display featured image on singular pages and posts
 Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
-Version: 2.8.2
+Version: 2.9.0
 Author: Cyrill Bolliger
 Text Domain: conditionally-display-featured-image-on-singular-pages
 License: GPLv2
@@ -24,7 +24,7 @@ define( 'CYBOCFI_PLUGIN_PATH', __DIR__ );
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '2.8.1' );
+define( 'CYBOCFI_VERSION', '2.9.0' );
 
 /**
  * Plugin prefix
@@ -665,9 +665,27 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 *
 		 */
 		public function hide_featured_image_in_the_loop( $value, $object_id, $meta_key ) {
-			if ( '_thumbnail_id' === $meta_key
+            /**
+             * Bypass circuit in_the_loop() test.
+             *
+             * Some themes load the featured image outside the loop. By passing
+             * false to this filter, the plugin skips the in_the_loop test and
+             * hides the featured image also outside the loop. Passing false
+             * also hides the featured image in the 'latest posts' widget.
+             *
+             * @since 2.9.0
+             *
+             * @param boolean $only_hide_in_the_loop
+             */
+            if ( apply_filters( 'cybocfi_only_hide_in_the_loop', true ) ) {
+                $in_the_loop = in_the_loop();
+            } else {
+                $in_the_loop = true;
+            }
+
+            if ( '_thumbnail_id' === $meta_key
                  && $object_id === $this->post_id
-                 && in_the_loop()
+                 && $in_the_loop
             ) {
 				return false;
 			}
