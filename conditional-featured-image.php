@@ -85,7 +85,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
         }
 
 		/**
-		 * Wrapper for 'cybocfi_post_type' filter.
+		 * Wrapper for 'cybocfi_enabled_for_post_type' filter.
          *
          * Only returns false if the filter returns false. Any other falsy
          * values returned by the filter are considered as true (be resilient to
@@ -97,6 +97,18 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 */
         private function is_enabled_for_post_type($post_type)
         {
+            /**
+             * Allow to disable the plugin for certain post types.
+             *
+             * The filter function must return false to disable the plugin.
+             *
+             * @param  bool    $enabled    Enable plugin for this post type. Default: true
+             * @param  string  $post_type  The current post type.
+             *
+             * @since 2.10.0
+             */
+            $enabled = apply_filters('cybocfi_enabled_for_post_type', true, $post_type);
+
             /**
              * DEPRECATED. Allow to disable the plugin for certain post types.
              *
@@ -114,7 +126,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 
             // check for not false so the plugin will still work if the filter
             // doesn't return anything
-            return false !== $deprecated;
+            return false !== $enabled && false !== $deprecated;
         }
 
 		/**

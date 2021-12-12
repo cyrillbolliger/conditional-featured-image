@@ -68,20 +68,24 @@ add_filter( 'cybocfi_hide_by_default', 'cybocfi_set_default_hiding_state', 10, 2
 `
 
 = Can I limit this plugin to posts (and exclude other post types)? =
-Yes. By default, the plugin is available on any post type, that has a featured image. But there is a filter, that lets you control, for with post types the plugin should be available. The following example limits it to posts only:
+Yes. By default, the plugin is available on any post type, that has a featured image. But there is a filter, that lets you control, for which post types the plugin should be available. The following example disables it for anything except for posts:
 `
-function cybocfi_enable_by_post_type( $post_type ) {
-    return 'post' === $post_type;
+function cybocfi_limit_to_posts( $enabled, $post_type ) {
+    if ( 'post' === $post_type ) {
+        return $enabled;
+    }
+
+    return false;
 }
-add_filter( 'cybocfi_post_type', 'cybocfi_enable_by_post_type' );
+add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts', 10, 2 );
 `
 The filter provides you the current post type and you can decide if you want to use the plugin for this post type by returning `true` to enable and `false` to disable it. Add the following snippet to your `functions.php` to enable the plugin for posts and pages, but disable it for any other post type:
 `
-function cybocfi_enable_by_post_type( $post_type ) {
+function cybocfi_limit_to_posts_and_pages( $enabled, $post_type ) {
     $allowed_post_types = array( 'post', 'page' ); // add any post type you want to use the plugin with
     return in_array( $post_type, $allowed_post_types );
 }
-add_filter( 'cybocfi_post_type', 'cybocfi_enable_by_post_type' );
+add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts_and_pages', 10, 2 );
 `
 
 = Is it possible to get the plugin in my language? =
