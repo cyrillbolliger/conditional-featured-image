@@ -95,21 +95,26 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 *
 		 * @return bool
 		 */
-		private function is_enabled_for_post_type( $post_type ) {
-			/**
-			 * Allow to disable the plugin for certain post types.
-			 *
-			 * The filter function must return false to disable the plugin.
-			 *
-			 * @since 2.3.0
-			 *
-			 * @param string $post_type The current post type.
-			 */
-			$enabled = apply_filters( 'cybocfi_post_type', $post_type, true );
+        private function is_enabled_for_post_type($post_type)
+        {
+            /**
+             * DEPRECATED. Allow to disable the plugin for certain post types.
+             *
+             * The filter function must return false to disable the plugin.
+             *
+             * @param  string  $post_type  The current post type.
+             *
+             * @since 2.3.0
+             *
+             * @deprecated 3.0.0  This filter will be removed in the
+             *                    future. Use 'cybocfi_enabled_for_post_type'
+             *                    filter instead.
+             */
+            $deprecated = apply_filters('cybocfi_post_type', $post_type, true);
 
-			// check for not false so the plugin will still work if the filter
+            // check for not false so the plugin will still work if the filter
             // doesn't return anything
-			return false !== $enabled;
+            return false !== $deprecated;
         }
 
 		/**
@@ -137,7 +142,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
             }
 
             // check, that we do only add the flag to post types that should be
-            // handled by this plugin. see cybocfi_post_type filter
+            // handled by this plugin. see cybocfi_enabled_for_post_type filter
 			if ( ! $this->is_enabled_for_post_type( $post->post_type ) ) {
                 return;
 			}
