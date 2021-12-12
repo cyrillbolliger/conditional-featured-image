@@ -3,7 +3,7 @@
 Plugin Name: Conditionally display featured image on singular pages and posts
 Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
-Version: 2.9.0
+Version: 2.10.0
 Author: Cyrill Bolliger
 Text Domain: conditionally-display-featured-image-on-singular-pages
 License: GPLv2
@@ -24,7 +24,7 @@ define( 'CYBOCFI_PLUGIN_PATH', __DIR__ );
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '2.9.0' );
+define( 'CYBOCFI_VERSION', '2.10.0' );
 
 /**
  * Plugin prefix
@@ -85,7 +85,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
         }
 
 		/**
-		 * Wrapper for 'cybocfi_post_type' filter.
+		 * Wrapper for 'cybocfi_enabled_for_post_type' filter.
          *
          * Only returns false if the filter returns false. Any other falsy
          * values returned by the filter are considered as true (be resilient to
@@ -95,21 +95,38 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 *
 		 * @return bool
 		 */
-		private function is_enabled_for_post_type( $post_type ) {
-			/**
-			 * Allow to disable the plugin for certain post types.
-			 *
-			 * The filter function must return false to disable the plugin.
-			 *
-			 * @since 2.3.0
-			 *
-			 * @param string $post_type The current post type.
-			 */
-			$enabled = apply_filters( 'cybocfi_post_type', $post_type, true );
+        private function is_enabled_for_post_type($post_type)
+        {
+            /**
+             * Allow to disable the plugin for certain post types.
+             *
+             * The filter function must return false to disable the plugin.
+             *
+             * @param  bool    $enabled    Enable plugin for this post type. Default: true
+             * @param  string  $post_type  The current post type.
+             *
+             * @since 2.10.0
+             */
+            $enabled = apply_filters('cybocfi_enabled_for_post_type', true, $post_type);
 
-			// check for not false so the plugin will still work if the filter
+            /**
+             * DEPRECATED. Allow to disable the plugin for certain post types.
+             *
+             * The filter function must return false to disable the plugin.
+             *
+             * @param  string  $post_type  The current post type.
+             *
+             * @since 2.3.0
+             *
+             * @deprecated 3.0.0  This filter will be removed in the
+             *                    future. Use 'cybocfi_enabled_for_post_type'
+             *                    filter instead.
+             */
+            $deprecated = apply_filters('cybocfi_post_type', $post_type, true);
+
+            // check for not false so the plugin will still work if the filter
             // doesn't return anything
-			return false !== $enabled;
+            return false !== $enabled && false !== $deprecated;
         }
 
 		/**
@@ -137,7 +154,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
             }
 
             // check, that we do only add the flag to post types that should be
-            // handled by this plugin. see cybocfi_post_type filter
+            // handled by this plugin. see cybocfi_enabled_for_post_type filter
 			if ( ! $this->is_enabled_for_post_type( $post->post_type ) ) {
                 return;
 			}
