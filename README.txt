@@ -113,6 +113,10 @@ A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) m
 
 == Changelog ==
 
+= 2.10.0 =
+* Deprecated `cybocfi_post_type` filter in favor of the new `cybocfi_enabled_for_post_type` filter. Props to @swissspidy for highlighting the issues with `cybocfi_post_type`.
+* Updated dependencies
+
 = 2.9.0 =
 * Added filter to bypass the in_the_loop() test so the plugin can be made compatible with themes that load the featured image outside the main loop.
 
