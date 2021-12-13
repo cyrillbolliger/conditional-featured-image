@@ -3,7 +3,7 @@
 Plugin Name: Conditionally display featured image on singular pages and posts
 Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
-Version: 2.10.0
+Version: 2.11.0
 Author: Cyrill Bolliger
 Text Domain: conditionally-display-featured-image-on-singular-pages
 License: GPLv2
@@ -24,7 +24,7 @@ define( 'CYBOCFI_PLUGIN_PATH', __DIR__ );
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '2.10.0' );
+define( 'CYBOCFI_VERSION', '2.11.0' );
 
 /**
  * Plugin prefix
@@ -122,7 +122,13 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
              *                    future. Use 'cybocfi_enabled_for_post_type'
              *                    filter instead.
              */
-            $deprecated = apply_filters('cybocfi_post_type', $post_type, true);
+            $deprecated = apply_filters_deprecated(
+                'cybocfi_post_type',
+                array( $post_type, true ),
+                '2.11.0',
+                'cybocfi_enabled_for_post_type',
+                'See <a href="https://wordpress.org/plugins/conditionally-display-featured-image-on-singular-pages/#faq-header">FAQ</a> for further assistance.'
+            );
 
             // check for not false so the plugin will still work if the filter
             // doesn't return anything

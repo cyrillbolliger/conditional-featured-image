@@ -4,7 +4,7 @@ Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post,
 Requires at least: 4.6
 Requires PHP: 5.6
 Tested up to: 5.8.2
-Stable tag: 2.10.0
+Stable tag: 2.11.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,36 @@ add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 = I can't save posts in WordPress 5.7.0 =
 A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) may render this plugin unusable if a second plugin uses post meta values in a certain way. People who are affected by this problem see the following error message "Updating failed. Could not delete meta value from database.". As the issue is related to WordPress core the workaround is to downgrade to WordPress 5.6.2 or to upgrade to WordPress 5.7.1. To our current knowledge, only very few users are affected by this defect. The Conditionally display featured image on singular posts and pages plugin itself works as expected for WordPress 5.7.0 and the issue may only appear if a second plugin triggers the bug in WordPress core.
 
+= I'm getting a deprecation notice, what must I do? =
+The `cybocfi_post_type` filter was deprecated in favor of `cybocfi_enabled_for_post_type`, as the filter arguments were used in an unusual way. Transitioning from the former to the latter is easy. Here an example:
+`
+// Using the deprecated filter - REMOVE THIS CALL
+function cybocfi_limit_to_posts( $post_type, $enabled ) {
+    if ( 'post' === $post_type ) {
+        return $enabled;
+    }
+
+    return false;
+}
+add_filter( 'cybocfi_post_type', 'cybocfi_limit_to_posts', 10, 2 );
+
+// Using the new filter - THIS IS HOW IT SHOULD BE DONE NOW
+function cybocfi_limit_to_posts( $enabled, $post_type ) {
+    if ( 'post' === $post_type ) {
+        return $enabled;
+    }
+
+    return false;
+}
+add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts', 10, 2 );
+`
+All you've got to do is:
+
+1) Change the filter hook from `cybocfi_post_type` to `cybocfi_enabled_for_post_type`.
+2) Swap the filter functions arguments. `$enabled` is now the first argument `$post_type` the second.
+
+In case you've only used one argument (`$post_type`), you must not only adapt the function signature, but also add the priority and number of arguments to your `add_filter()` function call. Just as it is shown in the example above.
+
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the `Plugins` screen in WordPress
@@ -112,6 +142,9 @@ A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) m
 2. Frontend
 
 == Changelog ==
+
+= 2.11.0 =
+* Show deprecation notice if `cybocfi_post_type` filter is used. Props to @swissspidy for bringing `apply_filters_deprecated()` to my attention.
 
 = 2.10.0 =
 * Deprecated `cybocfi_post_type` filter in favor of the new `cybocfi_enabled_for_post_type` filter. Props to @swissspidy for highlighting the issues with `cybocfi_post_type`.
