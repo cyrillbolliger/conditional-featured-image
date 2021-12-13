@@ -122,7 +122,13 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
              *                    future. Use 'cybocfi_enabled_for_post_type'
              *                    filter instead.
              */
-            $deprecated = apply_filters('cybocfi_post_type', $post_type, true);
+            $deprecated = apply_filters_deprecated(
+                'cybocfi_post_type',
+                array( $post_type, true ),
+                '2.11.0',
+                'cybocfi_enabled_for_post_type',
+                'See <a href="https://wordpress.org/plugins/conditionally-display-featured-image-on-singular-pages/#faq-header">FAQ</a> for further assistance.'
+            );
 
             // check for not false so the plugin will still work if the filter
             // doesn't return anything
