@@ -637,6 +637,16 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 				return;
 			}
 
+            /**
+             * Don't hide from oembeds.
+             *
+             * @since 2.12.0
+             */
+            if ( is_embed() ) {
+                $this->remove_featured_image_filter();
+                return;
+            }
+
 			// hide the featured image if it was set so
 			if ( $this->is_image_marked_hidden( $post_id ) ) {
 				$this->add_featured_image_filter( $post_id );
