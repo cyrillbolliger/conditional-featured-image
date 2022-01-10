@@ -4,7 +4,7 @@ Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post,
 Requires at least: 4.6
 Requires PHP: 5.6
 Tested up to: 5.8.2
-Stable tag: 2.11.0
+Stable tag: 2.12.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -142,6 +142,10 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 2. Frontend
 
 == Changelog ==
+
+= 2.12.0 =
+* Don't hide featured image from oEmbed requests.
+* Updated dependencies
 
 = 2.11.0 =
 * Show deprecation notice if `cybocfi_post_type` filter is used. Props to @swissspidy for bringing `apply_filters_deprecated()` to my attention.
