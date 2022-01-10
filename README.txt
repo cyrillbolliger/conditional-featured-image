@@ -143,6 +143,10 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 
 == Changelog ==
 
+= 2.12.0 =
+* Don't hide featured image from oEmbed requests.
+* Updated dependencies
+
 = 2.11.0 =
 * Show deprecation notice if `cybocfi_post_type` filter is used. Props to @swissspidy for bringing `apply_filters_deprecated()` to my attention.
 
