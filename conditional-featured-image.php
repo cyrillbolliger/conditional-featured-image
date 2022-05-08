@@ -32,6 +32,11 @@ define( 'CYBOCFI_VERSION', '2.12.0' );
 define( 'CYBOCFI_PLUGIN_PREFIX', 'cybocfi' );
 
 /**
+ * Shared code
+ */
+require_once 'include/class-conditional-featured-image-util.php';
+
+/**
  * Run admin code
  */
 require_once 'include/class-conditional-featured-image-admin.php';

@@ -47,61 +47,11 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 */
 		public function check_post_type_and_load( $current_screen ) {
 			$post_type = $current_screen->post_type;
-			$enabled   = $this->is_enabled_for_post_type( $post_type );
+			$enabled   = Cybocfi_Util::is_enabled_for_post_type( $post_type );
 
 			if ( $enabled ) {
 				$this->initialize_metabox();
 			}
-		}
-
-		/**
-		 * Wrapper for 'cybocfi_enabled_for_post_type' filter.
-		 *
-		 * Only returns false if the filter returns false. Any other falsy
-		 * values returned by the filter are considered as true (be resilient to
-		 * flaws in filter usage).
-		 *
-		 * @param string $post_type
-		 *
-		 * @return bool
-		 */
-		private function is_enabled_for_post_type( $post_type ) {
-			/**
-			 * Allow to disable the plugin for certain post types.
-			 *
-			 * The filter function must return false to disable the plugin.
-			 *
-			 * @param bool $enabled Enable plugin for this post type. Default: true
-			 * @param string $post_type The current post type.
-			 *
-			 * @since 2.10.0
-			 */
-			$enabled = apply_filters( 'cybocfi_enabled_for_post_type', true, $post_type );
-
-			/**
-			 * DEPRECATED. Allow to disable the plugin for certain post types.
-			 *
-			 * The filter function must return false to disable the plugin.
-			 *
-			 * @param string $post_type The current post type.
-			 *
-			 * @since 2.3.0
-			 *
-			 * @deprecated 3.0.0  This filter will be removed in the
-			 *                    future. Use 'cybocfi_enabled_for_post_type'
-			 *                    filter instead.
-			 */
-			$deprecated = apply_filters_deprecated(
-				'cybocfi_post_type',
-				array( $post_type, true ),
-				'2.11.0',
-				'cybocfi_enabled_for_post_type',
-				'See <a href="https://wordpress.org/plugins/conditionally-display-featured-image-on-singular-pages/#faq-header">FAQ</a> for further assistance.'
-			);
-
-			// check for not false so the plugin will still work if the filter
-			// doesn't return anything
-			return false !== $enabled && false !== $deprecated;
 		}
 
 		/**
@@ -131,7 +81,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 
 			// check, that we do only add the flag to post types that should be
 			// handled by this plugin. see cybocfi_enabled_for_post_type filter
-			if ( ! $this->is_enabled_for_post_type( $post->post_type ) ) {
+			if ( ! Cybocfi_Util::is_enabled_for_post_type( $post->post_type ) ) {
 				return;
 			}
 
@@ -452,7 +402,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 * @link https://github.com/WebDevStudios/custom-post-type-ui/blob/master/custom-post-type-ui.php
 		 */
 		public function cptui_compatibility( $value, $name ) {
-			if ( $this->is_enabled_for_post_type( $name ) ) {
+			if ( Cybocfi_Util::is_enabled_for_post_type( $name ) ) {
 				return array_merge( $value, array( 'custom-fields' ) );
 			}
 

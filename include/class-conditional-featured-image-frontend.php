@@ -203,6 +203,16 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @return bool
 		 */
 		private function is_image_marked_hidden( $post_id ) {
+			/**
+			 * Never hide the featured image on post types the plugin is not enabled for
+			 *
+			 * @since 2.13.0
+			 */
+			$post_type = get_post_type( $post_id );
+			if ( $post_type && ! Cybocfi_Util::is_enabled_for_post_type( $post_type ) ) {
+				return false;
+			}
+
 			// get visibility option
 			return (bool) get_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', true );
 		}
