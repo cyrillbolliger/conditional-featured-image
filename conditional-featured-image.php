@@ -548,6 +548,13 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 			add_action( $startup_hook, array( &$this, 'set_visibility' ) );
 
             /**
+             * Support for themes that render the post-featured-image before $startup_hook
+             *
+             * @since 2.13.0
+             */
+            add_filter( 'render_block_core/post-featured-image', array( &$this, 'featured_image_block' ) );
+
+            /**
              * Remove the featured image from Yoast SEO's schema.org if needed.
              *
              * @since 2.1.0
@@ -576,6 +583,27 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 
 			return $can_show_thumbnail;
 		}
+
+        /**
+         * Prevent block rendering needed
+         *
+         * If the featured image is marked hidden, we are in the main query and
+         * the page is singular, the given block content is removed.
+         *
+         * @param string $block_content
+         *
+         * @return string
+         *
+         * @since 2.13.0
+         */
+        public function featured_image_block( $block_content )
+        {
+            if ( is_singular() && is_main_query() && $this->is_image_marked_hidden( get_the_ID() ) ) {
+                return '';
+            }
+
+            return $block_content;
+        }
 
         /**
          * Hide the featured image in the Yoast SEO schema.org output, if the
