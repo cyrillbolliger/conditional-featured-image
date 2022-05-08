@@ -3,8 +3,8 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 5.8.2
-Stable tag: 2.12.0
+Tested up to: 6.0.0
+Stable tag: 2.13.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Choose if the featured image should be displayed in the single post/page view or
 
 == Description ==
 = Important notice =
-If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()` or `wp_get_attachment_image()` to be sure it will work.
+If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()`, `wp_get_attachment_image()` or the [Post Featured Image](https://wordpress.org/support/article/post-featured-image-block/) block to be sure it will work.
 By default, the plugin also only hides the featured image, if it is loaded within the loop. See the FAQ on how to use the plugin if you theme loads the featured image outside the loop.
 
 = Description =
@@ -142,6 +142,12 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 2. Frontend
 
 == Changelog ==
+
+= 2.13.0 =
+* Improved compatibility for block themes
+* The `cybocfi_enabled_for_post_type` filter now also applies directly to the output in the frontend
+* Refactored plugin architecture from single file to single class per file
+* Updated dependencies
 
 = 2.12.0 =
 * Don't hide featured image from oEmbed requests.
