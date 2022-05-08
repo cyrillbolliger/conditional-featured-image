@@ -12,7 +12,7 @@ Choose if the featured image should be displayed in the single post/page view or
 
 == Description ==
 = Important notice =
-If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()` or `wp_get_attachment_image()` to be sure it will work.
+If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()`, `wp_get_attachment_image()` or the [Post Featured Image](https://wordpress.org/support/article/post-featured-image-block/) block to be sure it will work.
 By default, the plugin also only hides the featured image, if it is loaded within the loop. See the FAQ on how to use the plugin if you theme loads the featured image outside the loop.
 
 = Description =
