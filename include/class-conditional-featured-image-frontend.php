@@ -249,6 +249,14 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 *
 		 */
 		public function hide_featured_image_in_the_loop( $value, $object_id, $meta_key ) {
+			if ( '_thumbnail_id' !== $meta_key ) {
+				return $value;
+			}
+
+			if ( $object_id !== $this->post_id ) {
+				return $value;
+			}
+
 			/**
 			 * Bypass circuit in_the_loop() test.
 			 *
@@ -262,16 +270,13 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 			 * @since 2.9.0
 			 *
 			 */
-			if ( apply_filters( 'cybocfi_only_hide_in_the_loop', true ) ) {
-				$in_the_loop = in_the_loop();
-			} else {
-				$in_the_loop = true;
+			$only_in_the_loop = apply_filters( 'cybocfi_only_hide_in_the_loop', true );
+
+			if ( ! $only_in_the_loop ) {
+				return false;
 			}
 
-			if ( '_thumbnail_id' === $meta_key
-			     && $object_id === $this->post_id
-			     && $in_the_loop
-			) {
+			if ( in_the_loop() ) {
 				return false;
 			}
 
