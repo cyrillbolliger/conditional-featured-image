@@ -40,8 +40,8 @@ require_once 'include/class-conditional-featured-image-util.php';
  * Run admin code
  */
 require_once 'include/class-conditional-featured-image-admin.php';
-add_action( 'current_screen', array( Cybocfi_Admin::get_instance(), 'check_post_type_and_load') );
-add_action( 'save_post', array( Cybocfi_Admin::get_instance(), 'handle_imports'), 10, 3 );
+add_action( 'current_screen', array( Cybocfi_Admin::get_instance(), 'check_post_type_and_load' ) );
+add_action( 'save_post', array( Cybocfi_Admin::get_instance(), 'handle_imports' ), 10, 3 );
 add_action( 'rest_api_init', array( Cybocfi_Admin::class, 'expose_meta_field_to_rest_api' ) );
 add_action( 'cptui_user_supports_params', array( Cybocfi_Admin::get_instance(), 'cptui_compatibility' ), 10, 3 );
 
