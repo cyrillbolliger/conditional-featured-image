@@ -110,11 +110,32 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @since 2.13.0
 		 */
 		public function featured_image_block( $block_content ) {
-			if ( is_singular() && is_main_query() && $this->is_image_marked_hidden( get_the_ID() ) ) {
+			if ( is_singular()
+			     && is_main_query()
+			     && ! $this->is_query_block() // check added in 2.14.0
+			     && $this->is_image_marked_hidden( get_the_ID() )
+			) {
 				return '';
 			}
 
 			return $block_content;
+		}
+
+		/**
+		 * Test if the current query origins from a query block
+		 *
+		 * @see https://github.com/cyrillbolliger/conditional-featured-image/issues/43
+		 * @see https://wordpress.org/support/topic/featured-image-removed-from-query-loop-block/
+		 *
+		 * @return bool
+		 *
+		 * @since 2.14.0
+		 */
+		private function is_query_block() {
+			global $wp_query;
+			return $wp_query instanceof WP_Query
+			       && array_key_exists( 'pagename', $wp_query->query )
+			       && 'query-block' === $wp_query->query['pagename'];
 		}
 
 		/**
