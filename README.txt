@@ -144,7 +144,8 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 == Changelog ==
 
 = 2.14.0 =
-* The featured image is now displayed inside the query block.
+* The featured image is now displayed inside the query block
+* Small performance and readability improvement
 * Updated dependencies
 
 = 2.13.0 =
