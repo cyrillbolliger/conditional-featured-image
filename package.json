@@ -1,6 +1,6 @@
 {
   "name": "conditionally-display-featured-image-on-singular-pages-and-posts",
-  "version": "2.13.0",
+  "version": "2.14.0",
   "description": "Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.",
   "main": "src/index.js",
   "scripts": {
