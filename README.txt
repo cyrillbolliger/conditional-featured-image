@@ -3,8 +3,8 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 6.0.0
-Stable tag: 2.13.0
+Tested up to: 6.2.0
+Stable tag: 2.14.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -142,6 +142,11 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 2. Frontend
 
 == Changelog ==
+
+= 2.14.0 =
+* The featured image is now displayed inside the query block
+* Small performance and readability improvement
+* Updated dependencies
 
 = 2.13.0 =
 * Improved compatibility for block themes
