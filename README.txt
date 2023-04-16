@@ -143,6 +143,10 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 
 == Changelog ==
 
+= 2.14.0 =
+* Compatibility with the query block: inside the query block, the featured image is displayed
+* Updated dependencies
+
 = 2.13.0 =
 * Improved compatibility for block themes
 * The `cybocfi_enabled_for_post_type` filter now also applies directly to the output in the frontend
