@@ -4,7 +4,7 @@ Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post,
 Requires at least: 4.6
 Requires PHP: 5.6
 Tested up to: 6.2.0
-Stable tag: 2.14.0
+Stable tag: 3.0.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -142,6 +142,11 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 2. Frontend
 
 == Changelog ==
+
+= 3.0.0 =
+* Improved compatibility with the block editor
+
+We've tested the release thoroughly - however depending on the theme and plugin you use, this release might be breaking in some exceptional cases.
 
 = 2.14.0 =
 * The featured image is now displayed inside the query block
