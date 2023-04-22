@@ -36,6 +36,8 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 
 		/**
 		 * The currently processed query
+		 *
+		 * @var WP_Query
 		 */
 		private $query;
 
@@ -137,10 +139,8 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @since 2.14.0
 		 */
 		private function is_query_block() {
-			global $wp_query;
-			return $wp_query instanceof WP_Query
-			       && array_key_exists( 'pagename', $wp_query->query )
-			       && 'query-block' === $wp_query->query['pagename'];
+			return array_key_exists( 'pagename', $this->query->query )
+			       && 'query-block' === $this->query->query['pagename'];
 		}
 
 		/**
@@ -183,16 +183,20 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		/**
 		 * Hide the featured image on single posts where the corresponding flag
 		 * was set in the backend.
+		 *
+		 * @param mixed|null $startup_hook_value
 		 */
-		public function set_visibility( $query ) {
+		public function set_visibility( $startup_hook_value = null ) {
+			if ( ! $this->set_query( $startup_hook_value ) ) {
+				return;
+			}
+
 			/**
 			 * Remove the filters, if it's not the main query. This is the case,
 			 * if the current query is executed after the main query.
 			 *
 			 * @since 2.5.1
 			 */
-			$this->query = $query;
-			
 			if ( ! $this->query->is_main_query() ) {
 				$this->remove_featured_image_filter();
 
@@ -211,7 +215,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 			 *
 			 * @since 2.12.0
 			 */
-			if ( is_embed() ) {
+			if ( $this->query->is_embed() ) {
 				$this->remove_featured_image_filter();
 
 				return;
@@ -221,6 +225,38 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 			if ( $this->is_image_marked_hidden( $post_id ) ) {
 				$this->add_featured_image_filter( $post_id );
 			}
+		}
+
+		/**
+		 * Populate $this->query.
+		 *
+		 * If $startup_hook_value is a WP_Query use it, else try the global
+		 * $wp_query. If both aren't instances of WP_Query, return false;
+		 *
+		 * @param mixed $startup_hook_value
+		 *
+		 * @return bool
+		 *
+		 * @since 3.0.0
+		 */
+		private function set_query( $startup_hook_value ) {
+			global $wp_query;
+
+			// If the cybocfi_startup_hook was customized, $startup_hook_value
+			// might be anything.
+			if ( $startup_hook_value instanceof WP_Query ) {
+				$this->query = $startup_hook_value;
+
+				return true;
+			}
+
+			if ( $wp_query instanceof WP_Query ) {
+				$this->query = $wp_query;
+
+				return true;
+			}
+
+			return false;
 		}
 
 		/**
