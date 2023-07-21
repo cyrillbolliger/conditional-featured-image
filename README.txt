@@ -145,6 +145,7 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 
 = 3.0.0 =
 * Improved compatibility with the block editor
+* Updated dependencies
 
 We've tested the release thoroughly - however depending on the theme and plugin you use, this release might be breaking in some exceptional cases.
 
