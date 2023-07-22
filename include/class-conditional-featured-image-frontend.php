@@ -117,7 +117,8 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @since 2.13.0
 		 */
 		public function featured_image_block( $block_content ) {
-			if ( $this->query->is_singular()
+			if ( $this->query
+			     && $this->query->is_singular()
 			     && $this->query->is_main_query()
 			     && ! $this->is_query_block() // check added in 2.14.0
 			     && $this->is_image_marked_hidden( get_the_ID() )
