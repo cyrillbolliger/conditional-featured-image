@@ -3,7 +3,7 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 6.3.0
+Tested up to: 6.3.1
 Stable tag: 3.0.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
