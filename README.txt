@@ -3,8 +3,8 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
 Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 6.3.0
-Stable tag: 3.0.1
+Tested up to: 6.3.1
+Stable tag: 3.1.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -142,6 +142,10 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 2. Frontend
 
 == Changelog ==
+
+= 3.1.0 =
+* Compatibility with Gutenberg 16.6.0
+* Updated dependencies
 
 = 3.0.1 =
 * Fixes fatal error for users that customized the startup hook so the query could not be set.

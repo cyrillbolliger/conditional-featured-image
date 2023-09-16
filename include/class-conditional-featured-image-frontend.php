@@ -117,6 +117,14 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 * @since 2.13.0
 		 */
 		public function featured_image_block( $block_content ) {
+			if (! $this->query) {
+				// required if using Gutenberg 16.6.0 (and probably future versions)
+				// see https://wordpress.org/support/topic/plugin-working-with-wp6-3-on-tt3/
+				// see https://wordpress.org/support/topic/duplicate-featured-image-10/
+				// added in 3.1.0
+				$this->set_query();
+			}
+
 			if ( $this->query
 			     && $this->query->is_singular()
 			     && $this->query->is_main_query()
@@ -240,7 +248,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 		 *
 		 * @since 3.0.0
 		 */
-		private function set_query( $startup_hook_value ) {
+		private function set_query( $startup_hook_value = null ) {
 			global $wp_query;
 
 			// If the cybocfi_startup_hook was customized, $startup_hook_value
