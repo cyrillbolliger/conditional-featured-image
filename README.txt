@@ -143,6 +143,10 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 
 == Changelog ==
 
+= 3.1.0 =
+* Compatibility with Gutenberg 16.6.0
+* Updated dependencies
+
 = 3.0.1 =
 * Fixes fatal error for users that customized the startup hook so the query could not be set.
 
