@@ -121,7 +121,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 				// required if using Gutenberg 16.6.0 (and probably future versions)
 				// see https://wordpress.org/support/topic/plugin-working-with-wp6-3-on-tt3/
 				// see https://wordpress.org/support/topic/duplicate-featured-image-10/
-				// added in 3.1.0
+				// added in 3.1.1
 				$this->set_query();
 			}
 

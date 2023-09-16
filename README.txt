@@ -4,7 +4,7 @@ Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post,
 Requires at least: 4.6
 Requires PHP: 5.6
 Tested up to: 6.3.1
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -143,7 +143,7 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 
 == Changelog ==
 
-= 3.1.0 =
+= 3.1.1 =
 * Compatibility with Gutenberg 16.6.0
 * Updated dependencies
 
