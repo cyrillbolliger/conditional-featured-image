@@ -1,6 +1,6 @@
 === Conditionally display featured image on singular posts and pages ===
 Contributors: cyrillbolliger
-Tags: thumbnail, featuredimage, featured, image, hide, condition, display, post, single, singular, page
+Tags: thumbnail, featured image, featured, image, featuredimage
 Requires at least: 6.6
 Requires PHP: 5.6
 Tested up to: 6.7.0
