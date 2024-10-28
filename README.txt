@@ -143,6 +143,12 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 
 == Changelog ==
 
+= 3.2.0 =
+* Requires at least WordPress 6.6
+* Compatibility up to WordPress 6.7
+* Fixed `withState` deprecation notice
+* Updated dependencies
+
 = 3.1.1 =
 * Compatibility with Gutenberg 16.6.0
 * Updated dependencies
