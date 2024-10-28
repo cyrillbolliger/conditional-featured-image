@@ -3,7 +3,7 @@
 import {CheckboxControl, PanelRow} from "@wordpress/components";
 import {withSelect, withDispatch} from "@wordpress/data";
 import {createElement, Fragment} from "@wordpress/element";
-import {withState, compose} from "@wordpress/compose";
+import {compose} from "@wordpress/compose";
 import {addFilter} from "@wordpress/hooks";
 
 let dirty = false;
@@ -37,7 +37,6 @@ class HideFeaturedImage extends React.Component {
 }
 
 const composedHideFeaturedImage = compose([
-    withState((value) => value),
     withSelect((select) => {
         const currentMeta = select('core/editor').getCurrentPostAttribute('meta');
         const editedMeta = select('core/editor').getEditedPostAttribute('meta');
