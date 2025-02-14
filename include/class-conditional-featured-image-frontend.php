@@ -87,6 +87,21 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 			 * @since 2.6.0
 			 */
 			add_filter( 'twentynineteen_can_show_post_thumbnail', array( &$this, 'twentynineteen' ) );
+
+			/**
+			 * Support for WooCommerce
+			 *
+			 * @since 3.3.0
+			 */
+			if ( class_exists( 'woocommerce' ) ) {
+				add_filter(
+					'woocommerce_single_product_image_thumbnail_html',
+					array( &$this, 'filter_woocommerce_single_product_image_thumbnail_html' ),
+					10,
+					2
+				);
+				add_action( 'wp_enqueue_scripts', array( &$this, 'add_woocommerce_css' ), 20, 2 );
+			}
 		}
 
 		/**
@@ -354,6 +369,87 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 			}
 
 			return $value;
+		}
+
+		/**
+		 * Get the ids of the gallery images of the current woocommerce product
+		 *
+		 * @return array
+		 *
+		 * @since 3.3.0
+		 */
+		private function get_woocommerce_gallery_ids() {
+			$product = wc_get_product( get_the_ID() );
+
+			return $product && method_exists( $product, 'get_gallery_image_ids' )
+				? $product->get_gallery_image_ids()
+				: array();
+		}
+
+		/**
+		 * Add css to hide the image block column if the featured image is hidden
+		 *
+		 * @since 3.3.0
+		 */
+		public function add_woocommerce_css() {
+			if ( ! $this->is_image_marked_hidden( get_the_ID() ) ) {
+				return;
+			}
+
+			// hide image space if there is no gallery
+			if ( empty( $this->get_woocommerce_gallery_ids() ) ) {
+				$styles = <<<EOL
+/* hide image container */
+.woocommerce-product-gallery {display: none;}
+/* use the full width for the summary */
+.woocommerce #content div.product div.summary,
+.woocommerce div.product div.summary,
+.woocommerce-page #content div.product div.summary,
+.woocommerce-page div.product div.summary {float: unset; width: unset;}
+EOL;
+				if ( wp_is_block_theme() ) {
+					// keep the classic theme styles because users can
+					// opt out of the block system (for woocommerce blocks)
+					$styles .= <<<EOL
+/* hide image block */
+.wp-block-woocommerce-product-image-gallery {display: none;}
+/* hide column for image block */
+.wp-block-column:has(.wp-block-woocommerce-product-image-gallery) {display: none;}
+EOL;
+				}
+				/**
+				 * Filter styles to hide space usually reserved for the image
+				 *
+				 * @param string $styles css rules
+				 *
+				 * @since 3.3.0
+				 */
+				$styles = apply_filters( 'cybocfi_woocommerce_style_overrides', $styles );
+
+				wp_add_inline_style( 'woocommerce-layout', $styles );
+			}
+		}
+
+		/**
+		 * Filter WooCommerce's single product image markup.
+		 *
+		 * Removes the markup for the product image if it is the featured image,
+		 * and it was marked hidden. Leaves the markup untouched otherwise.
+		 *
+		 * @param string $html
+		 * @param mixed $post_thumbnail_id
+		 *
+		 * @return string Returns an empty string if the given thumbnail is the
+		 *                featured image, and it was hidden or the original HTML
+		 *                otherwise.
+		 *
+		 * @since 3.3.0
+		 */
+		public function filter_woocommerce_single_product_image_thumbnail_html( $html, $post_thumbnail_id ) {
+			return $this->is_image_marked_hidden( get_the_ID() ) // featured image hidden
+			       && ! in_array( $post_thumbnail_id, $this->get_woocommerce_gallery_ids(), true ) // not a gallery image
+				? ''
+				: $html;
 		}
 	}
 }
