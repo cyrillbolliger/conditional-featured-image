@@ -13,10 +13,10 @@ Choose if the featured image should be displayed in the single post/page view or
 == Description ==
 = Important notice =
 If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()`, `wp_get_attachment_image()` or the [Post Featured Image](https://wordpress.org/support/article/post-featured-image-block/) block to be sure it will work.
-By default, the plugin also only hides the featured image, if it is loaded within the loop. See the FAQ on how to use the plugin if you theme loads the featured image outside the loop.
+By default, the plugin also only hides the featured image, if it is loaded within the loop. See the FAQ on how to use the plugin if your theme loads the featured image outside the loop.
 
 = Description =
-This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page but you don't want the featured image to be shown on every posts view itself.
+This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page, but you don't want the featured image to be shown on every post's view itself.
 
 The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
 
