@@ -4,7 +4,7 @@ Tags: thumbnail, featured image, featured, image, featuredimage
 Requires at least: 6.6
 Requires PHP: 5.6
 Tested up to: 6.7.2
-Stable tag: 3.2.0
+Stable tag: 3.3.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
