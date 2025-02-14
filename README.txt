@@ -153,8 +153,11 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 2. Activate the plugin through the `Plugins` screen in WordPress
 
 == Screenshots ==
-1. Backend
-2. Frontend
+1. Backend (Block Editor)
+2. Frontend (Front Page / Post List / Query Loop Block / Archive View)
+3. Frontend (Post / Page / Singular View)
+4. Backend (Classic Editor)
+5. Backend (WooCommerce Product)
 
 == Changelog ==
 
