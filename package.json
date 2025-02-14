@@ -27,7 +27,7 @@
     "@wordpress/scripts": "^30.3.0"
   },
   "dependencies": {
-    "@wordpress/components": "^28.10.0",
+    "@wordpress/components": "^29.4.0",
     "@wordpress/compose": "^7.10.0",
     "@wordpress/data": "^10.10.0",
     "@wordpress/element": "^6.10.0",
