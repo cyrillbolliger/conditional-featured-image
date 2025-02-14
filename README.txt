@@ -158,6 +158,11 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 
 == Changelog ==
 
+= 3.3.0 =
+* Added support for WooCommerce
+* Fixed `bottom margin` deprecation notice
+* Updated dependencies
+
 = 3.2.0 =
 * Requires at least WordPress 6.6
 * Compatibility up to WordPress 6.7
