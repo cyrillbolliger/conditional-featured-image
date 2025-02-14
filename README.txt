@@ -20,6 +20,9 @@ This plugin lets you choose for each post or page, if the featured image should 
 
 The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
 
+= WooCommerce =
+The plugin also supports WooCommerce. If the featured image is hidden for a product, it will be shown as thumbnail in the cart, checkout view, products lists etc. but not in the single product view. If a gallery is available, the gallery images will be shown as usual, but without the featured image.
+
 == Frequently asked questions ==
 = The plugin doesn't work with my theme. What can I do? =
 Typically there are two possibilities why the plugin is not compatible with your theme:
@@ -87,6 +90,18 @@ function cybocfi_limit_to_posts_and_pages( $enabled, $post_type ) {
 }
 add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts_and_pages', 10, 2 );
 `
+
+= WooCommerce: Can I remove the whitespace of the hidden image? =
+Yes. The plugin already adds some CSS which does this for standard themes / block configurations. If it doesn't work for you, you can customize the CSS with the following filter:
+
+`
+function cybocfi_woocommerce_styles( $css ) {
+    return '.wp-block-woocommerce-product-image-gallery {display: none;}';
+}
+add_filter( 'cybocfi_woocommerce_style_overrides', 'cybocfi_woocommerce_styles' );
+`
+
+The styles are only loaded on single product view pages where the featured image is hidden.
 
 = Is it possible to get the plugin in my language? =
 Absolutely. You're invited to [contribute a translation](https://translate.wordpress.org/projects/wp-plugins/conditionally-display-featured-image-on-singular-pages/) in your language. Please keep in mind, that the translation needs to be reviewed by the community, so it will take a little while until it gets accepted.
