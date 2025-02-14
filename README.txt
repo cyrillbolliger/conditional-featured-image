@@ -3,8 +3,8 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featured image, featured, image, featuredimage
 Requires at least: 6.6
 Requires PHP: 5.6
-Tested up to: 6.7.0
-Stable tag: 3.2.0
+Tested up to: 6.7.2
+Stable tag: 3.3.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,12 +13,15 @@ Choose if the featured image should be displayed in the single post/page view or
 == Description ==
 = Important notice =
 If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()`, `wp_get_attachment_image()` or the [Post Featured Image](https://wordpress.org/support/article/post-featured-image-block/) block to be sure it will work.
-By default, the plugin also only hides the featured image, if it is loaded within the loop. See the FAQ on how to use the plugin if you theme loads the featured image outside the loop.
+By default, the plugin also only hides the featured image, if it is loaded within the loop. See the FAQ on how to use the plugin if your theme loads the featured image outside the loop.
 
 = Description =
-This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page but you don't want the featured image to be shown on every posts view itself.
+This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page, but you don't want the featured image to be shown on every post's view itself.
 
 The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
+
+= WooCommerce =
+The plugin also supports WooCommerce. If the featured image is hidden for a product, it will be shown as thumbnail in the cart, checkout view, products lists etc. but not in the single product view. If a gallery is available, the gallery images will be shown as usual, but without the featured image.
 
 == Frequently asked questions ==
 = The plugin doesn't work with my theme. What can I do? =
@@ -88,6 +91,18 @@ function cybocfi_limit_to_posts_and_pages( $enabled, $post_type ) {
 add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts_and_pages', 10, 2 );
 `
 
+= WooCommerce: Can I remove the whitespace of the hidden image? =
+Yes. The plugin already adds some CSS which does this for standard themes / block configurations. If it doesn't work for you, you can customize the CSS with the following filter:
+
+`
+function cybocfi_woocommerce_styles( $css ) {
+    return '.wp-block-woocommerce-product-image-gallery {display: none;}';
+}
+add_filter( 'cybocfi_woocommerce_style_overrides', 'cybocfi_woocommerce_styles' );
+`
+
+The styles are only loaded on single product view pages where the featured image is hidden.
+
 = Is it possible to get the plugin in my language? =
 Absolutely. You're invited to [contribute a translation](https://translate.wordpress.org/projects/wp-plugins/conditionally-display-featured-image-on-singular-pages/) in your language. Please keep in mind, that the translation needs to be reviewed by the community, so it will take a little while until it gets accepted.
 
@@ -142,6 +157,11 @@ In case you've only used one argument (`$post_type`), you must not only adapt th
 2. Frontend
 
 == Changelog ==
+
+= 3.3.0 =
+* Added support for WooCommerce
+* Fixed `bottom margin` deprecation notice
+* Updated dependencies
 
 = 3.2.0 =
 * Requires at least WordPress 6.6
