@@ -1,18 +1,23 @@
-# Conditionally display featured image on singular posts and pages #
-## Plugin for WordPress
+# Conditionally display featured image on singular posts and pages
+A WordPress plugin. Get it from the [WordPress Plugin Repository](https://wordpress.org/plugins/conditionally-display-featured-image-on-singular-pages/).
 
-Get the plugin from the [WordPress Plugin Repository](https://wordpress.org/plugins/conditionally-display-featured-image-on-singular-pages/).
+## Description
 
-## Description ##
-### Important notice ###
-If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()`, `wp_get_attachment_image()` or the [Post Featured Image](https://wordpress.org/support/article/post-featured-image-block/) block to be sure it will work.
+Easily control the visibility of the featured image on singular posts and pages–while keeping it visible in archive pages, query loops, and other list views. This plugin provides a simple checkbox option within the post editor, allowing you to enable or disable the display of the featured image on individual posts and pages.
 
-### Description ###
-This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page but you don\'t want the featured image to be shown on every posts view itself.
+## Key Features
+* Show or hide the featured image on singular pages and posts.
+* Seamlessly integrates with the WordPress post editor.
+* Simple checkbox toggle—no technical knowledge needed.
+* Compatible with most themes.
+* Supports WooCommerce product pages.
+* Lightweight and optimized for performance.
+* 100% free—no ads, no upsells, no premium versions!
 
-The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
+Perfect for bloggers, content creators, and developers who want precise control over the visibility of featured images on a per-post basis.
 
 ---
+
 ## Contribute
 
 ### Getting started
