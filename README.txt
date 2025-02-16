@@ -8,145 +8,167 @@ Stable tag: 3.3.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Choose if the featured image should be displayed in the single post/page view or not. This plugin doesn't affect the archives view.
+Easily control whether the featured image appears in the single post or page view (but show it always in archive/list views).
 
 == Description ==
-= Important notice =
-If your theme does a customized call to load the featured image (like the Twenty Seventeen theme), this plugin might not work! Use `get_the_post_thumbnail()`, `wp_get_attachment_image()` or the [Post Featured Image](https://wordpress.org/support/article/post-featured-image-block/) block to be sure it will work.
-By default, the plugin also only hides the featured image, if it is loaded within the loop. See the FAQ on how to use the plugin if your theme loads the featured image outside the loop.
 
-= Description =
-This plugin lets you choose for each post or page, if the featured image should be shown in the single view. This can get handy, if you use the featured image to show a thumbnail on the archives or front page, but you don't want the featured image to be shown on every post's view itself.
+Easily control the visibility of the featured image on singular posts and pages–while keeping it visible in archive pages, query loops, and other list views. This plugin provides a simple checkbox option within the post editor, allowing you to enable or disable the display of the featured image on individual posts and pages.
 
-The plugin adds a simple checkbox to the featured image panel (or meta box if you are using the classic editor), that lets you choose, if the featured image will be shown in the singular view or not.
+= Key Features =
+* Show or hide the featured image on singular pages and posts.
+* Seamlessly integrates with the WordPress post editor.
+* Simple checkbox toggle—no technical knowledge needed.
+* Compatible with most themes.
+* Supports WooCommerce product pages.
+* Lightweight and optimized for performance.
+* 100% free—no ads, no upsells, no premium versions!
 
-= WooCommerce =
-The plugin also supports WooCommerce. If the featured image is hidden for a product, it will be shown as thumbnail in the cart, checkout view, products lists etc. but not in the single product view. If a gallery is available, the gallery images will be shown as usual, but without the featured image.
+Perfect for bloggers, content creators, and developers who want precise control over the visibility of featured images on a per-post basis.
+
+= Important Notice =
+
+If your theme uses a custom method to load the featured image (such as the Twenty Seventeen theme), this plugin may not work. To ensure compatibility, use standard WordPress functions like `get_the_post_thumbnail()`, `wp_get_attachment_image()`, or the [Post Featured Image](https://wordpress.org/support/article/post-featured-image-block/) block.
+
+Additionally, by default, this plugin only hides the featured image when it is loaded inside the loop. If your theme loads it outside the loop check out the first FAQ entry for a solution.
 
 == Frequently asked questions ==
-= The plugin doesn't work with my theme. What can I do? =
-Typically there are two possibilities why the plugin is not compatible with your theme:
 
-1) The theme loads the featured image before the loop (e.g. in the header).
-2) The theme makes a custom call to load the featured image.
+= The plugin doesn’t work with my theme. What can I do? =
 
-**In case 1** you can initialize the plugin early and disable the in_the_loop check. To do so, add the following snippet to your functions.php:
-`
-function cybocfi_set_startup_hook() {
-    return 'get_header';
-}
+Some themes load featured images in custom ways, which may cause compatibility issues. The two most common reasons are:
 
-add_filter( 'cybocfi_startup_hook', 'cybocfi_set_startup_hook' );
-add_filter( 'cybocfi_only_hide_in_the_loop', '__return_false' );
-`
-Be aware, that this might have some side effects: e.g. it might also hide the featured image from plugins that would normally see it, like SEO plugins or the 'latest posts' plugin.
+1) The theme loads the featured image before the loop (e.g., in the header).
+2) The theme manually calls the featured image using custom functions.
 
-**In case 2** either
+**Solution for case 1**
 
-*   kindly ask the theme developer to use one of the dedicated WordPress functions (`wp_get_attachment_image()`, `get_the_post_thumbnail()`, `the_post_thumbnail()`) to load the featured image in the singular views.
-*   or create a [child theme](https://developer.wordpress.org/themes/advanced-topics/child-themes/) that replaces the call, that loads the featured image, with one of the methods listed above.
+If your theme loads the featured image before the loop, you can modify the plugin's behavior by adding the following snippet to your `functions.php` file:
+
+    function cybocfi_set_startup_hook() {
+        return 'get_header';
+    }
+
+    add_filter( 'cybocfi_startup_hook', 'cybocfi_set_startup_hook' );
+    add_filter( 'cybocfi_only_hide_in_the_loop', '__return_false' );
+
+*Note:* This may hide the featured image from other plugins that rely on it, such as SEO plugins or the 'latest posts' plugin.
+
+**Solution for case 2**
+
+If your theme uses custom functions to display featured images, try the following options:
+
+* Ask the theme developer to use standard WordPress functions like `wp_get_attachment_image()`, `get_the_post_thumbnail()` or `the_post_thumbnail()`.
+* Create a [child theme]((https://developer.wordpress.org/themes/advanced-topics/child-themes/)) and load the featured image with one of the functions above.
 
 = Is this plugin GDPR compliant? =
-This plugin does not process or store any personal information. Hence, it is fully GDPR compliant without any further ado.
+Yes! This plugin does not collect, process, or store any personal information, making it fully GDPR-compliant.
 
 = Can I hide featured images by default? =
-Yes. Just add the following line to your functions.php:
-`
-add_filter('cybocfi_hide_by_default', '__return_true');
-`
-All *new* posts and pages will now hide the featured image by default (checkbox is checked by default). Existing posts and pages won't be changed.
 
-You may also set different default values depending on the post type:
-`
-function cybocfi_set_default_hiding_state( $default, $post_type ) {
-    if ( 'post' === $post_type ) {
-        $default = true; // set the default state for posts
-    } else if ( 'page' === $post_type ) {
-        $default = false; // set the default state for pages
+Yes. Add the following code to your `functions.php` file to hide featured images by default:
+
+    add_filter('cybocfi_hide_by_default', '__return_true');
+
+This will automatically check the "Hide Featured Image" option for all **new** posts and pages. Existing content remains unchanged.
+
+For different default behaviors based on the post type, use:
+
+    function cybocfi_set_default_hiding_state( $default, $post_type ) {
+        if ( 'post' === $post_type ) {
+            $default = true; // Hide featured images on posts by default
+        } else if ( 'page' === $post_type ) {
+            $default = false; // Show featured images on pages by default
+        }
+        return $default;
     }
-
-    return $default;
-}
-add_filter( 'cybocfi_hide_by_default', 'cybocfi_set_default_hiding_state', 10, 2 );
-`
+    add_filter( 'cybocfi_hide_by_default', 'cybocfi_set_default_hiding_state', 10, 2 );
 
 = Can I limit this plugin to posts (and exclude other post types)? =
-Yes. By default, the plugin is available on any post type, that has a featured image. But there is a filter, that lets you control, for which post types the plugin should be available. The following example disables it for anything except for posts:
-`
-function cybocfi_limit_to_posts( $enabled, $post_type ) {
-    if ( 'post' === $post_type ) {
-        return $enabled;
+
+Yes. By default, the plugin works on all post types that support featured images. To restrict it to posts only, add the following snippet to your `functions.php`:
+
+    function cybocfi_limit_to_posts( $enabled, $post_type ) {
+        if ( 'post' === $post_type ) {
+            return $enabled;
+        }
+
+        return false;
     }
+    add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts', 10, 2 );
 
-    return false;
-}
-add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts', 10, 2 );
-`
-The filter provides you the current post type and you can decide if you want to use the plugin for this post type by returning `true` to enable and `false` to disable it. Add the following snippet to your `functions.php` to enable the plugin for posts and pages, but disable it for any other post type:
-`
-function cybocfi_limit_to_posts_and_pages( $enabled, $post_type ) {
-    $allowed_post_types = array( 'post', 'page' ); // add any post type you want to use the plugin with
-    return in_array( $post_type, $allowed_post_types );
-}
-add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts_and_pages', 10, 2 );
-`
+If you want it to work for both posts and pages but disable it for other post types:
 
-= WooCommerce: Can I remove the whitespace of the hidden image? =
-Yes. The plugin already adds some CSS which does this for standard themes / block configurations. If it doesn't work for you, you can customize the CSS with the following filter:
+    function cybocfi_limit_to_posts_and_pages( $enabled, $post_type ) {
+        $allowed_post_types = array( 'post', 'page' ); // add any post type you want to use the plugin with
+        return in_array( $post_type, $allowed_post_types );
+    }
+    add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts_and_pages', 10, 2 );
 
-`
-function cybocfi_woocommerce_styles( $css ) {
-    return '.wp-block-woocommerce-product-image-gallery {display: none;}';
-}
-add_filter( 'cybocfi_woocommerce_style_overrides', 'cybocfi_woocommerce_styles' );
-`
+= WooCommerce: How does the plugin handle product images? =
 
-The styles are only loaded on single product view pages where the featured image is hidden.
+If the featured image is hidden for a WooCommerce product, it will still appear as a thumbnail in the cart, checkout, and product lists. However, it will not be displayed in the single product view. If a product gallery is available, all gallery images will be shown as usual, except for the hidden featured image.
 
-= Is it possible to get the plugin in my language? =
-Absolutely. You're invited to [contribute a translation](https://translate.wordpress.org/projects/wp-plugins/conditionally-display-featured-image-on-singular-pages/) in your language. Please keep in mind, that the translation needs to be reviewed by the community, so it will take a little while until it gets accepted.
+= WooCommerce: Can I remove empty space left by the hidden image? =
+
+Yes. The plugin applies CSS adjustments automatically for standard themes. If needed, customize it with this snippet:
+
+    function cybocfi_woocommerce_styles( $css ) {
+        return '.wp-block-woocommerce-product-image-gallery {display: none;}';
+    }
+    add_filter( 'cybocfi_woocommerce_style_overrides', 'cybocfi_woocommerce_styles' );
+
+These styles apply only when the featured image is hidden in WooCommerce product pages.
+
+= Can I translate this plugin into my language? =
+
+Absolutely! You can [contribute a translation](https://translate.wordpress.org/projects/wp-plugins/conditionally-display-featured-image-on-singular-pages/) here. Keep in mind that translations need community approval before they go live.
 
 = How can I change the text of the checkbox? =
-There is a filter hook for this. Add the following snippet to your functions.php:
-`
-function cybocfi_set_featured_image_label( $label ) {
-    return 'Hide featured image in post'; // change this string
-}
-add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
-`
 
-= I can't save posts in WordPress 5.7.0 =
-A bug in WordPress core [#52787](https://core.trac.wordpress.org/ticket/52787) may render this plugin unusable if a second plugin uses post meta values in a certain way. People who are affected by this problem see the following error message "Updating failed. Could not delete meta value from database.". As the issue is related to WordPress core the workaround is to downgrade to WordPress 5.6.2 or to upgrade to WordPress 5.7.1. To our current knowledge, only very few users are affected by this defect. The Conditionally display featured image on singular posts and pages plugin itself works as expected for WordPress 5.7.0 and the issue may only appear if a second plugin triggers the bug in WordPress core.
+You can customize the checkbox label using this filter in your `functions.php` file:
 
-= I'm getting a deprecation notice, what must I do? =
-The `cybocfi_post_type` filter was deprecated in favor of `cybocfi_enabled_for_post_type`, as the filter arguments were used in an unusual way. Transitioning from the former to the latter is easy. Here an example:
-`
-// Using the deprecated filter - REMOVE THIS CALL
-function cybocfi_limit_to_posts( $post_type, $enabled ) {
-    if ( 'post' === $post_type ) {
-        return $enabled;
+    function cybocfi_set_featured_image_label( $label ) {
+        return 'Hide featured image in post'; // change this text
     }
+    add_filter( 'cibocfi_checkbox_label', 'cybocfi_set_featured_image_label' );
 
-    return false;
-}
-add_filter( 'cybocfi_post_type', 'cybocfi_limit_to_posts', 10, 2 );
+= I can’t save posts in WordPress 5.7.0 =
 
-// Using the new filter - THIS IS HOW IT SHOULD BE DONE NOW
-function cybocfi_limit_to_posts( $enabled, $post_type ) {
-    if ( 'post' === $post_type ) {
-        return $enabled;
-    }
+A WordPress core bug ([#52787](https://core.trac.wordpress.org/ticket/52787)) may cause this issue when another plugin uses post meta values in a specific way. If you see the error "Updating failed. Could not delete meta value from database.", try:
 
-    return false;
-}
-add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts', 10, 2 );
-`
-All you've got to do is:
+* Downgrading to WordPress 5.6.2.
+* Upgrading to WordPress 5.7.1 or later.
+
+= I'm getting a deprecation notice. What should I do? =
+
+The `cybocfi_post_type` filter has been replaced with `cybocfi_enabled_for_post_type`. To update your code:
 
 1) Change the filter hook from `cybocfi_post_type` to `cybocfi_enabled_for_post_type`.
 2) Swap the filter functions arguments. `$enabled` is now the first argument `$post_type` the second.
 
-In case you've only used one argument (`$post_type`), you must not only adapt the function signature, but also add the priority and number of arguments to your `add_filter()` function call. Just as it is shown in the example above.
+In case you've only used one argument (`$post_type`), you must not only adapt the function signature, but also add the priority and number of arguments to your `add_filter()` function call.
+
+Here's an example:
+
+    // BEFORE UPDATE: Using the deprecated filter
+    function cybocfi_limit_to_posts( $post_type, $enabled ) {
+        if ( 'post' === $post_type ) {
+            return $enabled;
+        }
+
+        return false;
+    }
+    add_filter( 'cybocfi_post_type', 'cybocfi_limit_to_posts', 10, 2 );
+
+    // AFTER UPDATE: Using the new filter
+    function cybocfi_limit_to_posts( $enabled, $post_type ) {
+        if ( 'post' === $post_type ) {
+            return $enabled;
+        }
+
+        return false;
+    }
+    add_filter( 'cybocfi_enabled_for_post_type', 'cybocfi_limit_to_posts', 10, 2 );
 
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/conditional-featured-image` directory, or install the plugin through the WordPress plugins screen directly.
