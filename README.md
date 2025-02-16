@@ -3,7 +3,7 @@ A WordPress plugin. Get it from the [WordPress Plugin Repository](https://wordpr
 
 ## Description
 
-Easily control the visibility of the featured image on singular posts and pages–while keeping it visible in archive pages, query loops, and other list views. This plugin provides a simple checkbox option within the post editor, allowing you to enable or disable the display of the featured image on individual posts and pages.
+Easily control whether the featured image appears in the single post or page view (doesn't hide it in archive/list view).
 
 ## Key Features
 * Show or hide the featured image on singular pages and posts.

@@ -8,7 +8,7 @@ Stable tag: 3.3.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Easily control whether the featured image appears in the single post or page view (but show it always in archive/list views).
+Easily control whether the featured image appears in the single post or page view (doesn't hide it in archive/list view).
 
 == Description ==
 
