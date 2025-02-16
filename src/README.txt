@@ -183,6 +183,9 @@ Here's an example:
 
 == Changelog ==
 
+= 3.3.1 =
+* Fixed violation of the WordPress coding standards
+
 = 3.3.0 =
 * Added support for WooCommerce
 * Fixed `bottom margin` deprecation notice
