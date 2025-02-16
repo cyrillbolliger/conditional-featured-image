@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   wordpress:
     build: .
@@ -15,7 +13,7 @@ services:
       - 8080:80
     volumes:
       - "wp:/var/www/html:rw"
-      - ".:/var/www/html/wp-content/plugins/conditional-featured-image:ro"
+      - "./src:/var/www/html/wp-content/plugins/conditional-featured-image:ro"
       - "./addon-php.ini:/usr/local/etc/php/conf.d/addon-php.ini:ro"
     extra_hosts:
       - "host.docker.internal:host-gateway"
