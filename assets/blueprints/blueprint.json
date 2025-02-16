@@ -1,0 +1,14 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "login": true,
+  "landingPage": "/wp-admin/post.php?post=1&action=edit",
+  "steps": [
+    {
+      "step": "importWxr",
+      "file": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/cyrillbolliger/conditional-featured-image/main/playground/blueprint-content.xml"
+      }
+    }
+  ]
+}
