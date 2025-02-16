@@ -1,6 +1,6 @@
 {
   "name": "conditionally-display-featured-image-on-singular-pages-and-posts",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "Easily control whether the featured image appears in the single post or page view (but show it always in archive/list views).",
   "main": "js/index.js",
   "scripts": {
