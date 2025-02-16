@@ -398,24 +398,21 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 
 			// hide image space if there is no gallery
 			if ( empty( $this->get_woocommerce_gallery_ids() ) ) {
-				$styles = <<<EOL
-/* hide image container */
-.woocommerce-product-gallery {display: none;}
-/* use the full width for the summary */
-.woocommerce #content div.product div.summary,
-.woocommerce div.product div.summary,
-.woocommerce-page #content div.product div.summary,
-.woocommerce-page div.product div.summary {float: unset; width: unset;}
-EOL;
+				$styles = "/* hide image container */"
+				          . ".woocommerce-product-gallery {display: none;}"
+				          . "/* use the full width for the summary */"
+				          . ".woocommerce #content div.product div.summary,"
+				          . ".woocommerce div.product div.summary,"
+				          . ".woocommerce-page #content div.product div.summary,"
+				          . ".woocommerce-page div.product div.summary {float: unset; width: unset;}";
+
 				if ( wp_is_block_theme() ) {
 					// keep the classic theme styles because users can
 					// opt out of the block system (for woocommerce blocks)
-					$styles .= <<<EOL
-/* hide image block */
-.wp-block-woocommerce-product-image-gallery {display: none;}
-/* hide column for image block */
-.wp-block-column:has(.wp-block-woocommerce-product-image-gallery) {display: none;}
-EOL;
+					$styles .= "/* hide image block */"
+					           . ".wp-block-woocommerce-product-image-gallery {display: none;}"
+					           . "/* hide column for image block */"
+					           . ".wp-block-column:has(.wp-block-woocommerce-product-image-gallery) {display: none;}";
 				}
 				/**
 				 * Filter styles to hide space usually reserved for the image
