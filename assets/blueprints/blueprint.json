@@ -1,7 +1,7 @@
 {
   "$schema": "https://playground.wordpress.net/blueprint-schema.json",
   "login": true,
-  "landingPage": "/wp-admin/post.php?post=1&action=edit",
+  "landingPage": "/wp-admin/post.php?post=10&action=edit",
   "steps": [
     {
       "step": "importWxr",
@@ -9,6 +9,30 @@
         "resource": "url",
         "url": "https://raw.githubusercontent.com/cyrillbolliger/conditional-featured-image/main/playground/blueprint-content.xml"
       }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/bike.jpeg",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/cyrillbolliger/conditional-featured-image/main/playground/bike.jpeg"
+      }
+    },
+    {
+      "step": "wp-cli",
+      "command": "wp media import wordpress/wp-content/bike.jpeg --post_id=10 --title='bike' --featured_image"
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/hike.jpeg",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/cyrillbolliger/conditional-featured-image/main/playground/hike.jpeg"
+      }
+    },
+    {
+      "step": "wp-cli",
+      "command": "wp media import wordpress/wp-content/hike.jpeg --post_id=6 --title='hike' --featured_image"
     }
   ]
 }
