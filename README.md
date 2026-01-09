@@ -23,7 +23,7 @@ Perfect for bloggers, content creators, and developers who want precise control 
 ### Getting started
 * Clone the repo
 * Run `docker-compose up -d`
-* Open [localhost:8080](http://localhost/8080)
+* Open [localhost:8080](http://localhost:8080)
 * Activate the plugin
 
 ### JS-Stuff (Gutenberg)

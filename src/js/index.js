@@ -29,7 +29,6 @@ class HideFeaturedImage extends React.Component {
                                 updateHideFeaturedImage(value, meta);
                             }
                         }
-                        __nextHasNoMarginBottom
                     />
                 </PanelRow>
             </>

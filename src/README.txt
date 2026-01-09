@@ -3,8 +3,8 @@ Contributors: cyrillbolliger
 Tags: thumbnail, featured image, featured, image, featuredimage
 Requires at least: 6.7
 Requires PHP: 5.6
-Tested up to: 6.8
-Stable tag: 3.3.1
+Tested up to: 6.9
+Stable tag: 3.3.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -182,6 +182,10 @@ Here's an example:
 5. Backend (WooCommerce Product)
 
 == Changelog ==
+
+= 3.3.2 =
+* Compatibility up to WordPress 6.9
+* Updated dependencies
 
 = 3.3.1 =
 * Fixed violation of the WordPress coding standards
