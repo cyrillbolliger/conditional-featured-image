@@ -18,6 +18,7 @@ Easily control the visibility of the featured image on singular posts and pagesâ
 * Show or hide the featured image on singular pages and posts.
 * Seamlessly integrates with the WordPress post editor.
 * Simple checkbox toggleâ€”no technical knowledge needed.
+* AI ready.
 * Compatible with most themes.
 * Supports WooCommerce product pages.
 * Lightweight and optimized for performance.
@@ -182,6 +183,10 @@ Here's an example:
 5. Backend (WooCommerce Product)
 
 == Changelog ==
+
+= 3.4.0 =
+* Added WordPress Abilities API support
+* Updated dependencies
 
 = 3.3.2 =
 * Compatibility up to WordPress 6.9
