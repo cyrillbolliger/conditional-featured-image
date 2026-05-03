@@ -32,6 +32,11 @@ define( 'CYBOCFI_VERSION', '3.3.2' );
 define( 'CYBOCFI_PLUGIN_PREFIX', 'cybocfi' );
 
 /**
+ * Plugin name
+ */
+define( 'CYBOCFI_PLUGIN_NAME', 'conditionally-display-featured-image-on-singular-pages' );
+
+/**
  * Shared code
  */
 require_once 'include/class-conditional-featured-image-util.php';
@@ -52,3 +57,10 @@ if ( ! is_admin() ) {
 	require_once 'include/class-conditional-featured-image-frontend.php';
 	add_action( 'init', array( Cybocfi_Frontend::get_instance(), 'run' ) );
 }
+
+/**
+ * Abilities API
+ */
+require_once 'include/class-conditional-featured-image-abilities.php';
+add_action( 'wp_abilities_api_categories_init', array( Cybocfi_Abilities::get_instance(), 'register_category' ) );
+add_action( 'wp_abilities_api_init', array( Cybocfi_Abilities::get_instance(), 'register_abilities' ) );

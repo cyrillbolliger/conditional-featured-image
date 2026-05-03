@@ -88,9 +88,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 			// ensure, we do not overwrite the flag if set explicitly.
 			// (update_post_meta() is called before the post is actually
 			// inserted and thus the save_post action is triggered).
-			$meta           = get_post_meta( $id );
-			$has_hide_value = array_key_exists( CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', $meta );
-			if ( $has_hide_value ) {
+			if ( Cybocfi_Util::has_hide_flag_value( $id ) ) {
 				return;
 			}
 
@@ -307,11 +305,7 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 			if ( $new ) {
 				checked( $this->get_default_checkbox_value() );
 			} else {
-				$stored_meta = get_post_meta( $post->ID );
-
-				if ( isset ( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ] ) ) {
-					checked( $stored_meta[ CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image' ][0], 'yes' );
-				}
+				checked( $this->read_hide_flag( $post->ID ) );
 			}
 		}
 
@@ -341,14 +335,24 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		}
 
 		/**
-		 * Persist the checkbox value.
+		 * Persist the hide flag for the given post.
 		 *
 		 * @param int $post_id The post id.
 		 * @param bool $bool True to hide the featured image.
 		 */
-		private function save_hide_flag( $post_id, $bool ) {
-			$value = $bool ? 'yes' : '';
-			update_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', $value );
+		public function save_hide_flag( $post_id, $bool ) {
+			Cybocfi_Util::save_hide_flag( $post_id, $bool );
+		}
+
+		/**
+		 * Read the hide flag for the given post.
+		 *
+		 * @param int $post_id
+		 *
+		 * @return bool True if the featured image should be hidden.
+		 */
+		public function read_hide_flag( $post_id ) {
+			return Cybocfi_Util::read_hide_flag( $post_id );
 		}
 
 		/**
