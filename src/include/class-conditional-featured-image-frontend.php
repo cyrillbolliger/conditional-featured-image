@@ -302,7 +302,7 @@ if ( ! class_exists( 'Cybocfi_Frontend' ) ) {
 			}
 
 			// get visibility option
-			return (bool) get_post_meta( $post_id, CYBOCFI_PLUGIN_PREFIX . '_hide_featured_image', true );
+			return Cybocfi_Util::read_hide_flag( $post_id );
 		}
 
 		/**

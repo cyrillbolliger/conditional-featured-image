@@ -3,7 +3,7 @@
 Plugin Name: Conditionally display featured image on singular pages and posts
 Plugin URI: https://github.com/cyrillbolliger/conditional-featured-image
 Description: Easily control whether the featured image appears in the single post or page view (doesn't hide it in archive/list view).
-Version: 3.3.2
+Version: 3.4.0
 Author: Cyrill Bolliger
 Text Domain: conditionally-display-featured-image-on-singular-pages
 License: GPLv2
@@ -24,12 +24,17 @@ define( 'CYBOCFI_PLUGIN_PATH', __DIR__ );
 /**
  * Version number (don't forget to change it also in the header)
  */
-define( 'CYBOCFI_VERSION', '3.3.2' );
+define( 'CYBOCFI_VERSION', '3.4.0' );
 
 /**
  * Plugin prefix
  */
 define( 'CYBOCFI_PLUGIN_PREFIX', 'cybocfi' );
+
+/**
+ * Plugin name
+ */
+define( 'CYBOCFI_PLUGIN_NAME', 'conditionally-display-featured-image-on-singular-pages' );
 
 /**
  * Shared code
@@ -52,3 +57,10 @@ if ( ! is_admin() ) {
 	require_once 'include/class-conditional-featured-image-frontend.php';
 	add_action( 'init', array( Cybocfi_Frontend::get_instance(), 'run' ) );
 }
+
+/**
+ * Abilities API
+ */
+require_once 'include/class-conditional-featured-image-abilities.php';
+add_action( 'wp_abilities_api_categories_init', array( Cybocfi_Abilities::get_instance(), 'register_category' ) );
+add_action( 'wp_abilities_api_init', array( Cybocfi_Abilities::get_instance(), 'register_abilities' ) );
