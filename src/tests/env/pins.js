@@ -4,8 +4,10 @@
  * installs their latest stable version.
  *
  * `node tests/env/pins.js detect` prints the updates to test, as the matrix
- * of update-compat.yml: one `{ component, from, to, channel }` per update,
- * newer than its pin and without an open PR or issue. COMPONENT and VERSION
+ * of update-compat.yml: one `{ component, from, to, channel, branch, issue }`
+ * per update, newer than its pin and without an open PR or issue. `branch`
+ * and `issue` name the PR's branch and the issue's title, which the next
+ * detect looks for. COMPONENT and VERSION
  * (workflow_dispatch) name one update instead.
  *
  * `node tests/env/pins.js override <component> <version>` writes the update
@@ -157,6 +159,8 @@ const detect = async () => {
 				from: pin( component ),
 				to: version,
 				channel: channel( version ),
+				branch: branchName( component, version ),
+				issue: issueTitle( component, version ),
 			},
 		];
 	}
@@ -180,6 +184,8 @@ const detect = async () => {
 			from: pin( name ),
 			to,
 			channel: name === 'core' ? channel( to ) : 'stable',
+			branch: branchName( name, to ),
+			issue: issueTitle( name, to ),
 		} ) );
 };
 

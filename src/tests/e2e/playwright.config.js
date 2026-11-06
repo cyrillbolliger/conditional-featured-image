@@ -13,13 +13,17 @@ module.exports = defineConfig( {
 	outputDir: 'results',
 	globalSetup: require.resolve( './global-setup' ),
 	workers: 1,
+	// In CI a flaky test passes on its retry: a compat run must not file a
+	// failure for it.
+	retries: process.env.CI ? 1 : 0,
 	// In CI also the report to upload, and the results that
-	// tests/env/summary.js lists in the PR or issue.
+	// tests/env/summary.js lists in the PR or issue. Not in report/: the html
+	// reporter empties it at the end of the run.
 	reporter: process.env.CI
 		? [
 				[ 'list' ],
 				[ 'html', { open: 'never', outputFolder: 'report' } ],
-				[ 'json', { outputFile: 'report/results.json' } ],
+				[ 'json', { outputFile: 'results/results.json' } ],
 			]
 		: 'list',
 	use: {

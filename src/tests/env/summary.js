@@ -1,20 +1,18 @@
 /**
- * The Playwright results of a compat run (report/results.json, the JSON
+ * The Playwright results of a compat run (results/results.json, the JSON
  * reporter's file) as Markdown for its PR or issue: the counts and the
  * failed tests, and the errors outside a test (global setup, loading a
  * spec). `node tests/env/summary.js <results.json>`
  */
 const fs = require( 'fs' );
 
-const {
-	stats,
-	suites,
-	errors = [],
-} = JSON.parse( fs.readFileSync( process.argv[ 2 ] ) );
+const { stats, suites, errors } = JSON.parse(
+	fs.readFileSync( process.argv[ 2 ] )
+);
 
 const failed = [];
 const collect = ( suite, titles ) => {
-	for ( const spec of suite.specs ?? [] ) {
+	for ( const spec of suite.specs ) {
 		if ( spec.tests.some( ( test ) => test.status === 'unexpected' ) ) {
 			failed.push( [ ...titles, spec.title ].join( ' › ' ) );
 		}

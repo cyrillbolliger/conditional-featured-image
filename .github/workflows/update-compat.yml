@@ -17,8 +17,8 @@ on:
 
 # One run per update, alone against the current pins (src/tests/env/pins.js):
 # wp-env starts on the pins with the update in place, then the whole check.
-# A pass moves the pin in a PR (not for a core beta or RC), a failure opens an
-# issue.
+# A pass moves the pin in a PR (not for a core beta or RC), a failing test
+# opens an issue, a setup failure fails the run without one.
 jobs:
   detect:
     name: Detect updates
@@ -176,16 +176,15 @@ jobs:
         id: summary
         run: |
           dir="$RUNNER_TEMP/compat/report"
-          if [ "$(cat "$dir/outcome" 2>/dev/null)" = success ]; then
-            echo "passed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "passed=false" >> "$GITHUB_OUTPUT"
-          fi
+          results="$RUNNER_TEMP/compat/results/results.json"
+          # success or failure of the Playwright step; skipped or none when
+          # the job ended before it.
+          echo "outcome=$(cat "$dir/outcome" 2>/dev/null || echo none)" >> "$GITHUB_OUTPUT"
           {
             echo "Automated compatibility check of $COMPONENT $TO (pinned: $FROM): wp-env on the pins with the update in place, then the whole end-to-end check."
             echo
-            if [ -f "$dir/results.json" ]; then
-              node tests/env/summary.js "$dir/results.json"
+            if [ -f "$results" ]; then
+              node tests/env/summary.js "$results"
             else
               echo "No test results: the run ended before the tests (see its log)."
             fi
@@ -201,22 +200,33 @@ jobs:
           cat "$RUNNER_TEMP/body.md"
 
       - name: Move the pin
-        if: steps.summary.outputs.passed == 'true' && matrix.update.channel != 'pre'
+        if: steps.summary.outputs.outcome == 'success' && matrix.update.channel != 'pre'
         run: node tests/env/pins.js move "$COMPONENT" "$TO"
 
       - name: Open a PR
-        if: steps.summary.outputs.passed == 'true' && matrix.update.channel != 'pre'
+        if: steps.summary.outputs.outcome == 'success' && matrix.update.channel != 'pre'
         uses: peter-evans/create-pull-request@v8
         with:
           base: main
-          branch: compat/${{ matrix.update.component }}-${{ matrix.update.to }}
+          branch: ${{ matrix.update.branch }}
           commit-message: "Compat: ${{ matrix.update.component }} ${{ matrix.update.to }} passes — pin moved from ${{ matrix.update.from }}"
           title: "Compat: ${{ matrix.update.component }} ${{ matrix.update.to }}"
           body-path: ${{ runner.temp }}/body.md
           delete-branch: true
 
       - name: Open an issue
-        if: steps.summary.outputs.passed != 'true'
+        if: steps.summary.outputs.outcome == 'failure'
+        env:
+          ISSUE: ${{ matrix.update.issue }}
         run: |
           gh label create compat --color B60205 --description "Fails against an update" --force
-          gh issue create --label compat --title "Compat: $COMPONENT $TO fails" --body-file "$RUNNER_TEMP/body.md"
+          gh issue create --label compat --title "$ISSUE" --body-file "$RUNNER_TEMP/body.md"
+
+      # A setup step failed (npm, Playwright's browser, wp-env, the fixtures):
+      # no issue, which would keep the update from being tested again. The
+      # failed run reports it, and the next run tests the update again.
+      - name: Fail without a test run
+        if: steps.summary.outputs.outcome != 'success' && steps.summary.outputs.outcome != 'failure'
+        run: |
+          echo "::error::The tests of $COMPONENT $TO did not run (outcome: ${{ steps.summary.outputs.outcome }}); see the test job's log."
+          exit 1
