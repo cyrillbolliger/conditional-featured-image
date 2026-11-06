@@ -1,0 +1,217 @@
+name: Update compatibility
+
+on:
+  schedule:
+    - cron: "30 7 * * 1,4" # Monday and Thursday at 07:30 UTC
+  workflow_dispatch:
+    inputs:
+      component:
+        description: One update to test instead of the detected ones
+        type: choice
+        options: [detected, core, classic-editor]
+        default: detected
+      version:
+        description: Its version (with a component)
+        type: string
+        default: ""
+
+# One run per update, alone against the current pins (src/tests/env/pins.js):
+# wp-env starts on the pins with the update in place, then the whole check.
+# A pass moves the pin in a PR (not for a core beta or RC), a failure opens an
+# issue.
+jobs:
+  detect:
+    name: Detect updates
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+    defaults:
+      run:
+        working-directory: src
+    outputs:
+      matrix: ${{ steps.detect.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Detect updates
+        id: detect
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMPONENT: ${{ inputs.component != 'detected' && inputs.component || '' }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          if [ -n "$COMPONENT" ] && [ -z "$VERSION" ]; then
+            echo "::error::A component needs a version."
+            exit 1
+          fi
+          matrix=$(node tests/env/pins.js detect)
+          echo "Updates: $matrix"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  test:
+    name: Test ${{ matrix.update.component }} ${{ matrix.update.to }}
+    needs: detect
+    if: needs.detect.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    # This job runs the plugins' code: it gets no write access.
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: src
+    strategy:
+      fail-fast: false
+      matrix:
+        update: ${{ fromJSON(needs.detect.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: src/package-lock.json
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Put ${{ matrix.update.component }} ${{ matrix.update.to }} in place
+        run: node tests/env/pins.js override "${{ matrix.update.component }}" "${{ matrix.update.to }}"
+
+      - name: Start wp-env
+        run: npm run env:start
+
+      - name: Load the fixtures
+        run: npm run env:fixtures
+
+      # WooCommerce, CPT UI and the themes are not pinned: the issue or PR
+      # names the versions that ran.
+      - name: Record the versions
+        run: |
+          wp() { npx wp-env run cli wp -- "$@" 2>/dev/null; }
+          {
+            echo "- core $(wp core version)"
+            wp plugin list --status=active --fields=name,version --format=csv | tail -n +2 | sed 's/^/- /; s/,/ /'
+            wp theme list --fields=name,version --format=csv | tail -n +2 | grep -E 'twentytwenty(one|five)' | sed 's/^/- /; s/,/ /'
+          } > "$RUNNER_TEMP/versions.md"
+          cat "$RUNNER_TEMP/versions.md"
+
+      - name: Playwright
+        id: suite
+        run: npm run test:e2e
+
+      - name: Record the outcome
+        if: always()
+        run: |
+          mkdir -p tests/e2e/report
+          echo "${{ steps.suite.outcome }}" > tests/e2e/report/outcome
+          if [ -f "$RUNNER_TEMP/versions.md" ]; then cp "$RUNNER_TEMP/versions.md" tests/e2e/report/; fi
+
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: compat-${{ matrix.update.component }}-${{ matrix.update.to }}
+          path: |
+            src/tests/e2e/report/
+            src/tests/e2e/results/
+          if-no-files-found: ignore
+
+  report:
+    name: Report ${{ matrix.update.component }} ${{ matrix.update.to }}
+    needs: [detect, test]
+    if: always() && needs.detect.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    defaults:
+      run:
+        working-directory: src
+    strategy:
+      fail-fast: false
+      matrix:
+        update: ${{ fromJSON(needs.detect.outputs.matrix) }}
+    env:
+      COMPONENT: ${{ matrix.update.component }}
+      FROM: ${{ matrix.update.from }}
+      TO: ${{ matrix.update.to }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      # Missing when the test job ended before its upload.
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: compat-${{ matrix.update.component }}-${{ matrix.update.to }}
+          path: ${{ runner.temp }}/compat
+
+      - name: Summarize
+        id: summary
+        run: |
+          dir="$RUNNER_TEMP/compat/report"
+          if [ "$(cat "$dir/outcome" 2>/dev/null)" = success ]; then
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          fi
+          {
+            echo "Automated compatibility check of $COMPONENT $TO (pinned: $FROM): wp-env on the pins with the update in place, then the whole end-to-end check."
+            echo
+            if [ -f "$dir/results.json" ]; then
+              node tests/env/summary.js "$dir/results.json"
+            else
+              echo "No test results: the run ended before the tests (see its log)."
+            fi
+            if [ -f "$dir/versions.md" ]; then
+              echo
+              echo "Versions that ran:"
+              echo
+              cat "$dir/versions.md"
+            fi
+            echo
+            echo "Run: $RUN_URL (artifact \`compat-$COMPONENT-$TO\`: report and results)"
+          } > "$RUNNER_TEMP/body.md"
+          cat "$RUNNER_TEMP/body.md"
+
+      - name: Move the pin
+        if: steps.summary.outputs.passed == 'true' && matrix.update.channel != 'pre'
+        run: node tests/env/pins.js move "$COMPONENT" "$TO"
+
+      - name: Open a PR
+        if: steps.summary.outputs.passed == 'true' && matrix.update.channel != 'pre'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          base: main
+          branch: compat/${{ matrix.update.component }}-${{ matrix.update.to }}
+          commit-message: "Compat: ${{ matrix.update.component }} ${{ matrix.update.to }} passes — pin moved from ${{ matrix.update.from }}"
+          title: "Compat: ${{ matrix.update.component }} ${{ matrix.update.to }}"
+          body-path: ${{ runner.temp }}/body.md
+          delete-branch: true
+
+      - name: Open an issue
+        if: steps.summary.outputs.passed != 'true'
+        run: |
+          gh label create compat --color B60205 --description "Fails against an update" --force
+          gh issue create --label compat --title "Compat: $COMPONENT $TO fails" --body-file "$RUNNER_TEMP/body.md"
