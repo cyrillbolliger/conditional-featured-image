@@ -122,6 +122,7 @@ $entry(
 	. '<!-- /wp:post-template --></div><!-- /wp:query -->'
 );
 $entry( 'book', 'hidden-book', true );
+$entry( 'book', 'shown-book', false );
 
 foreach ( array( 'hidden-product', 'gallery-product', 'shown-product' ) as $slug ) {
 	$id      = $entry( 'product', $slug, 'shown-product' !== $slug );

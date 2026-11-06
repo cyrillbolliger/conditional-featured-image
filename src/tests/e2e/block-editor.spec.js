@@ -51,6 +51,9 @@ test.describe( 'saving the checkbox', () => {
 	test.afterAll( () => setHideFlag( id, false ) );
 
 	test( 'hides the image on the front end', async ( { page } ) => {
+		await visit( page, `/${ slug }/` );
+		await expect( featuredImage( page, slug ) ).toBeVisible();
+
 		const checkbox = await openEditor( page, id );
 		await expect( checkbox ).not.toBeChecked();
 		await checkbox.check();

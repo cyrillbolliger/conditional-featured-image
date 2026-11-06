@@ -24,6 +24,7 @@ for ( const theme of [ 'twentytwentyfive', 'twentytwentyone' ] ) {
 		for ( const [ url, slug ] of [
 			[ '/shown-post/', 'shown-post' ],
 			[ '/shown-page/', 'shown-page' ],
+			[ '/book/shown-book/', 'shown-book' ],
 		] ) {
 			test( `shows the image on ${ url }`, async ( { page } ) => {
 				await visit( page, url );
