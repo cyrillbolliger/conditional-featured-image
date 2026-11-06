@@ -1,3 +1,8 @@
 /src/node_modules
 /src/build
 /.idea
+# The end-to-end check: results, report and login of a run
+/src/tests/e2e/results/
+/src/tests/e2e/report/
+/src/tests/e2e/.auth/
+/src/.wp-env.override.json
