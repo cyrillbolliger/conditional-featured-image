@@ -1,0 +1,51 @@
+/**
+ * The Playwright results of a compat run (results/results.json, the JSON
+ * reporter's file) as Markdown for its PR or issue: the counts and the
+ * failed tests, and the errors outside a test (global setup, loading a
+ * spec). `node tests/env/summary.js <results.json>`
+ */
+const fs = require( 'fs' );
+
+const { stats, suites, errors } = JSON.parse(
+	fs.readFileSync( process.argv[ 2 ] )
+);
+
+const failed = [];
+const collect = ( suite, titles ) => {
+	for ( const spec of suite.specs ) {
+		if ( spec.tests.some( ( test ) => test.status === 'unexpected' ) ) {
+			failed.push( [ ...titles, spec.title ].join( ' › ' ) );
+		}
+	}
+	for ( const child of suite.suites ?? [] ) {
+		collect( child, [ ...titles, child.title ] );
+	}
+};
+for ( const suite of suites ) {
+	collect( suite, [ suite.title ] );
+}
+
+const lines = [
+	`${ stats.expected } passed, ${ stats.unexpected } failed, ${ stats.flaky } flaky, ${ stats.skipped } skipped.`,
+];
+if ( failed.length ) {
+	lines.push(
+		'',
+		'Failed:',
+		'',
+		...failed.map( ( title ) => `- ${ title }` )
+	);
+}
+if ( errors.length ) {
+	// The messages carry the terminal's colour codes.
+	const plain = ( text ) => text.replace( /\x1b\[[0-9;]*m/g, '' );
+	lines.push(
+		'',
+		'Errors outside the tests:',
+		'',
+		'```',
+		...errors.map( ( error ) => plain( error.message ) ),
+		'```'
+	);
+}
+process.stdout.write( lines.join( '\n' ) + '\n' );

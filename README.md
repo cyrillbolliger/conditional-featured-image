@@ -38,3 +38,18 @@ The JavaScript tooling lives in `src/`.
 - Install dependencies with `cd src && npm install`
 - Watch file changes with `cd src && npm run start`
 - Build the production files with `cd src && npm run build`
+
+### End-to-end check
+
+Runs on [wp-env](https://www.npmjs.com/package/@wordpress/env) (needs Docker) at http://localhost:8890, against the versions pinned in `src/.wp-env.json`.
+
+```bash
+cd src
+npm run build
+npm run env:start
+npm run env:fixtures
+npx playwright install chromium # once
+npm run test:e2e
+```
+
+`.github/workflows/update-compat.yml` runs the same check against new WordPress core and Classic Editor versions every Monday and Thursday. A pass on a stable version opens a PR that moves the pin (for core, also `Tested up to`); a failing test opens an issue labelled `compat`; a run whose setup failed before the tests opens none and is retried on the next schedule. After merging a core PR, push `README.txt` to SVN by hand (see the README one level up).

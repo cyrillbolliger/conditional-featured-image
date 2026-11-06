@@ -1,0 +1,56 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# The end-to-end check on the pins (src/.wp-env.json).
+jobs:
+  check:
+    name: End-to-end check
+    runs-on: ubuntu-latest
+    # This job runs the plugins' code: it gets no write access.
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: src
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: src/package-lock.json
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Start wp-env
+        run: npm run env:start
+
+      - name: Load the fixtures
+        run: npm run env:fixtures
+
+      - name: Playwright
+        run: npm run test:e2e
+
+      - name: Upload the report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            src/tests/e2e/report/
+            src/tests/e2e/results/
+          if-no-files-found: ignore
