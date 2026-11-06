@@ -58,6 +58,9 @@ const updatedEnv = ( component, version ) => {
 	};
 };
 
+// What versions.js compares: a release, or a core beta or RC.
+const VERSION = /^[\d.]+(-(beta|RC)\d*)?$/;
+
 const channel = ( version ) =>
 	/^[\d.]+$/.test( version ) ? 'stable' : 'pre';
 
@@ -80,7 +83,7 @@ const coreCandidates = async () => {
 	);
 	const versions = offers
 		.map( ( offer ) => offer.version )
-		.filter( ( version ) => /^[\d.]+(-(beta|RC)\d*)?$/.test( version ) );
+		.filter( ( version ) => VERSION.test( version ) );
 	const newest = ( list ) =>
 		list.reduce( ( a, b ) => ( isNewer( b, a ) ? b : a ) );
 	const stable = newest(
@@ -142,6 +145,12 @@ const isReported = ( component, version ) => {
 const detect = async () => {
 	const { COMPONENT: component, VERSION: version } = process.env;
 	if ( component ) {
+		if ( ! [ 'core', ...PLUGINS ].includes( component ) ) {
+			throw new Error( `Unknown component: ${ component }` );
+		}
+		if ( ! VERSION.test( version ) ) {
+			throw new Error( `Not a version: ${ version }` );
+		}
 		return [
 			{
 				component,
@@ -160,7 +169,10 @@ const detect = async () => {
 			] )
 		) ),
 	];
+	// Only a plugin's releases: its version is whatever its author tagged.
+	// Core's are filtered above.
 	return candidates
+		.filter( ( [ name, to ] ) => name === 'core' || /^[\d.]+$/.test( to ) )
 		.filter( ( [ name, to ] ) => isNewer( to, pin( name ) ) )
 		.filter( ( [ name, to ] ) => ! isReported( name, to ) )
 		.map( ( [ name, to ] ) => ( {
@@ -174,7 +186,16 @@ const detect = async () => {
 const override = ( component, version ) =>
 	writeJson( '.wp-env.override.json', updatedEnv( component, version ) );
 
+// Only forward: a manual run of an older version must not move the pin back.
 const move = ( component, version ) => {
+	if ( ! isNewer( version, pin( component ) ) ) {
+		console.log(
+			`::notice::${ component } ${ version } passes; the pin ${ pin(
+				component
+			) } is not older and stays.`
+		);
+		return;
+	}
 	writeJson( '.wp-env.json', {
 		...readJson( '.wp-env.json' ),
 		...updatedEnv( component, version ),

@@ -42,7 +42,8 @@ const featuredImage = ( page, slug ) =>
 	page.locator( `img[src*="/uploads/"][src*="/${ slug }"]` );
 
 // Opens the page and fails on PHP errors, warnings and notices the plugin's
-// files raise (WP_DEBUG_DISPLAY prints them into the page).
+// files raise (WP_DEBUG_DISPLAY prints them into the page), and on core's
+// deprecation and misuse notices the plugin causes (tests/env/notices.php).
 const visit = async ( page, url ) => {
 	const response = await page.goto( url );
 	expect( response.status() ).toBe( 200 );

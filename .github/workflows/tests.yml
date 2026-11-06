@@ -10,11 +10,16 @@ jobs:
   check:
     name: End-to-end check
     runs-on: ubuntu-latest
+    # This job runs the plugins' code: it gets no write access.
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: src
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v7
         with:

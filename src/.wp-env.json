@@ -13,7 +13,8 @@
 		"https://downloads.wordpress.org/theme/twentytwentyone.zip"
 	],
 	"mappings": {
-		"wp-content/plugins/conditional-featured-image": "."
+		"wp-content/plugins/conditional-featured-image": ".",
+		"wp-content/mu-plugins/cybocfi-notices.php": "./tests/env/notices.php"
 	},
 	"config": {
 		"WP_DEBUG": true,

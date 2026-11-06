@@ -90,7 +90,10 @@ jobs:
         run: npm run build
 
       - name: Put ${{ matrix.update.component }} ${{ matrix.update.to }} in place
-        run: node tests/env/pins.js override "${{ matrix.update.component }}" "${{ matrix.update.to }}"
+        env:
+          COMPONENT: ${{ matrix.update.component }}
+          TO: ${{ matrix.update.to }}
+        run: node tests/env/pins.js override "$COMPONENT" "$TO"
 
       - name: Start wp-env
         run: npm run env:start
@@ -134,7 +137,9 @@ jobs:
   report:
     name: Report ${{ matrix.update.component }} ${{ matrix.update.to }}
     needs: [detect, test]
-    if: always() && needs.detect.outputs.matrix != '[]'
+    # Not after a cancel: the missing results would read as a failure, and its
+    # issue would keep the update from being tested again.
+    if: ${{ !cancelled() && needs.detect.result == 'success' && needs.detect.outputs.matrix != '[]' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
