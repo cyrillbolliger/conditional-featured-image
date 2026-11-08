@@ -14,7 +14,7 @@
  * to .wp-env.override.json, for wp-env to start on it.
  *
  * `node tests/env/pins.js move <component> <version>` moves the pin; for core
- * also `Tested up to` in README.txt.
+ * also `Tested up to` in README.txt, and for a core RC only that.
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -202,12 +202,20 @@ const move = ( component, version ) => {
 		);
 		return;
 	}
-	writeJson( '.wp-env.json', {
-		...readJson( '.wp-env.json' ),
-		...updatedEnv( component, version ),
-	} );
+	// A core RC only moves `Tested up to`: the pin stays on a release.
+	if ( channel( version ) === 'stable' ) {
+		writeJson( '.wp-env.json', {
+			...readJson( '.wp-env.json' ),
+			...updatedEnv( component, version ),
+		} );
+	}
 	if ( component === 'core' ) {
-		const testedUpTo = version.split( '.' ).slice( 0, 2 ).join( '.' );
+		// 7.2-RC1 is tested up to 7.2.
+		const testedUpTo = version
+			.split( '-' )[ 0 ]
+			.split( '.' )
+			.slice( 0, 2 )
+			.join( '.' );
 		fs.writeFileSync(
 			file( 'README.txt' ),
 			read( 'README.txt' ).replace(
