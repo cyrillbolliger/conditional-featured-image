@@ -216,13 +216,20 @@ const move = ( component, version ) => {
 			.split( '.' )
 			.slice( 0, 2 )
 			.join( '.' );
-		fs.writeFileSync(
-			file( 'README.txt' ),
-			read( 'README.txt' ).replace(
-				/^Tested up to: .*$/m,
-				`Tested up to: ${ testedUpTo }`
-			)
-		);
+		const readme = read( 'README.txt' );
+		// Only forward too: after an RC it is ahead of the pin, and a security
+		// release of the pinned branch must not move it back.
+		if (
+			isNewer( testedUpTo, readme.match( /^Tested up to: (.*)$/m )[ 1 ] )
+		) {
+			fs.writeFileSync(
+				file( 'README.txt' ),
+				readme.replace(
+					/^Tested up to: .*$/m,
+					`Tested up to: ${ testedUpTo }`
+				)
+			);
+		}
 	}
 };
 
