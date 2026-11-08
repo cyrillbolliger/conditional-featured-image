@@ -4,7 +4,7 @@
  * installs their latest stable version.
  *
  * `node tests/env/pins.js detect` prints the updates to test, as the matrix
- * of update-compat.yml: one `{ component, from, to, channel, branch, issue }`
+ * of update-compat.yml: one `{ component, from, to, stage, branch, issue }`
  * per update, newer than its pin and without an open PR or issue. `branch`
  * and `issue` name the PR's branch and the issue's title, which the next
  * detect looks for. COMPONENT and VERSION
@@ -63,8 +63,9 @@ const updatedEnv = ( component, version ) => {
 // What versions.js compares: a release, or a core beta or RC.
 const VERSION = /^[\d.]+(-(beta|RC)\d*)?$/;
 
-const channel = ( version ) =>
-	/^[\d.]+$/.test( version ) ? 'stable' : 'pre';
+// beta, rc or stable: update-compat.yml opens no PR for a beta.
+const stage = ( version ) =>
+	version.match( VERSION )[ 2 ]?.toLowerCase() ?? 'stable';
 
 const getJson = async ( url ) => {
 	const response = await fetch( url );
@@ -89,11 +90,11 @@ const coreCandidates = async () => {
 	const newest = ( list ) =>
 		list.reduce( ( a, b ) => ( isNewer( b, a ) ? b : a ) );
 	const stable = newest(
-		versions.filter( ( version ) => channel( version ) === 'stable' )
+		versions.filter( ( version ) => stage( version ) === 'stable' )
 	);
 	const pre = versions.filter(
 		( version ) =>
-			channel( version ) === 'pre' && isNewer( version, stable )
+			stage( version ) !== 'stable' && isNewer( version, stable )
 	);
 	return pre.length ? [ stable, newest( pre ) ] : [ stable ];
 };
@@ -158,7 +159,7 @@ const detect = async () => {
 				component,
 				from: pin( component ),
 				to: version,
-				channel: channel( version ),
+				stage: stage( version ),
 				branch: branchName( component, version ),
 				issue: issueTitle( component, version ),
 			},
@@ -183,7 +184,7 @@ const detect = async () => {
 			component: name,
 			from: pin( name ),
 			to,
-			channel: name === 'core' ? channel( to ) : 'stable',
+			stage: stage( to ),
 			branch: branchName( name, to ),
 			issue: issueTitle( name, to ),
 		} ) );
@@ -203,7 +204,7 @@ const move = ( component, version ) => {
 		return;
 	}
 	// A core RC only moves `Tested up to`: the pin stays on a release.
-	if ( channel( version ) === 'stable' ) {
+	if ( stage( version ) === 'stable' ) {
 		writeJson( '.wp-env.json', {
 			...readJson( '.wp-env.json' ),
 			...updatedEnv( component, version ),

@@ -201,16 +201,16 @@ jobs:
           cat "$RUNNER_TEMP/body.md"
 
       - name: Move the pin
-        if: steps.summary.outputs.outcome == 'success' && !contains(matrix.update.to, '-beta')
+        if: steps.summary.outputs.outcome == 'success' && matrix.update.stage != 'beta'
         run: node tests/env/pins.js move "$COMPONENT" "$TO"
 
       - name: Open a PR
-        if: steps.summary.outputs.outcome == 'success' && !contains(matrix.update.to, '-beta')
+        if: steps.summary.outputs.outcome == 'success' && matrix.update.stage != 'beta'
         uses: peter-evans/create-pull-request@v8
         with:
           base: main
           branch: ${{ matrix.update.branch }}
-          commit-message: "Compat: ${{ matrix.update.component }} ${{ matrix.update.to }} passes${{ matrix.update.channel == 'stable' && format(' — pin moved from {0}', matrix.update.from) || ' — Tested up to moved' }}"
+          commit-message: "Compat: ${{ matrix.update.component }} ${{ matrix.update.to }} passes${{ matrix.update.stage == 'stable' && format(' — pin moved from {0}', matrix.update.from) || ' — Tested up to moved' }}"
           title: "Compat: ${{ matrix.update.component }} ${{ matrix.update.to }}"
           body-path: ${{ runner.temp }}/body.md
           delete-branch: true
