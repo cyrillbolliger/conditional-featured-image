@@ -19,7 +19,8 @@ on:
 # wp-env starts on the pins with the update in place, then the whole check.
 # A pass moves the pin in a PR (not for a core beta; for a core RC only
 # `Tested up to`, to test by hand and release before the final), a failing
-# test opens an issue, a setup failure fails the run without one.
+# test or a global setup (src/tests/e2e/global-setup.js) that fails twice
+# opens an issue, a setup failure fails the run without one.
 jobs:
   detect:
     name: Detect updates
