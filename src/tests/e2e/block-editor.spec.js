@@ -254,6 +254,27 @@ test.describe( 'the default', () => {
 		await expect( checkbox ).toBeChecked();
 	} );
 
+	// The default is no edit of the user's: undo must not revert it.
+	test( 'keeps the default on undo', async ( { page } ) => {
+		setHideByDefault( 'late' );
+		const checkbox = await openEditor( page );
+		await expect( checkbox ).toBeChecked();
+		const hasUndo = () =>
+			page.evaluate( () =>
+				wp.data.select( 'core/editor' ).hasEditorUndo()
+			);
+		const undo = () =>
+			page.evaluate( () => wp.data.dispatch( 'core/editor' ).undo() );
+		expect( await hasUndo() ).toBe( false );
+		await undo();
+		await expect( checkbox ).toBeChecked();
+
+		await checkbox.uncheck();
+		expect( await hasUndo() ).toBe( true );
+		await undo();
+		await expect( checkbox ).toBeChecked();
+	} );
+
 	test( 'keeps the saved value of an existing post', async ( { page } ) => {
 		setHideByDefault( 'late' );
 		const checkbox = await openEditor(
