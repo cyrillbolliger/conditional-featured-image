@@ -43,6 +43,31 @@ test( 'shows the stored flag', async ( { page } ) => {
 	await expect( checkbox ).toBeChecked();
 } );
 
+// The global React is there only because wp-element depends on it: the
+// plugin's editor script must not use it (#82).
+test( 'shows the checkbox without the global React', async ( { page } ) => {
+	let wrapped = false;
+	await page.route(
+		/\/plugins\/conditional-featured-image\/build\/index\.js/,
+		async ( route ) => {
+			const script = await ( await route.fetch() ).text();
+			// Not the original headers: their length and encoding are those
+			// of the compressed original.
+			await route.fulfill( {
+				contentType: 'text/javascript',
+				body: `( function ( React ) {\n${ script }\n} )();`,
+			} );
+			wrapped = true;
+		}
+	);
+	const checkbox = await openEditor(
+		page,
+		fixtureId( 'post', 'hidden-post' )
+	);
+	await expect( checkbox ).toBeChecked();
+	expect( wrapped ).toBe( true );
+} );
+
 test.describe( 'saving the checkbox', () => {
 	const slug = 'block-editor-post';
 	let id;
