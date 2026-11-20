@@ -4,7 +4,7 @@ Tags: thumbnail, featured image, featured, image, featuredimage
 Requires at least: 6.7
 Requires PHP: 5.6
 Tested up to: 7.2
-Stable tag: 3.4.0
+Stable tag: 3.5.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -183,6 +183,14 @@ Here's an example:
 5. Backend (WooCommerce Product)
 
 == Changelog ==
+
+= 3.5.0 =
+* Compatibility up to WordPress 7.2
+* Added custom-fields support to every post type the plugin is enabled for that has a featured image and uses the block editor
+* Hide the checkbox on post types where the block editor can't save it
+* Fixed hiding by default: it now applies to new posts without opening the featured image panel, and stays out of the undo history
+* Store the hide-by-default flag only on post types with featured image support
+* Updated dependencies
 
 = 3.4.0 =
 * Added WordPress Abilities API support
