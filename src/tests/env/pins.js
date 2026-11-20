@@ -259,6 +259,11 @@ const minimumCore = async () => {
 			version === MINIMUM.branch ||
 			version.startsWith( `${ MINIMUM.branch }.` )
 	);
+	if ( ! releases.length ) {
+		throw new Error(
+			`No release of WordPress ${ MINIMUM.branch } in the stable-check API: check MINIMUM.branch in tests/env/pins.js.`
+		);
+	}
 	return releases.reduce( ( a, b ) => ( isNewer( b, a ) ? b : a ) );
 };
 
