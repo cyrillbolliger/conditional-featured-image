@@ -14,7 +14,8 @@
 	],
 	"mappings": {
 		"wp-content/plugins/conditional-featured-image": ".",
-		"wp-content/mu-plugins/cybocfi-notices.php": "./tests/env/notices.php"
+		"wp-content/mu-plugins/cybocfi-notices.php": "./tests/env/notices.php",
+		"wp-content/mu-plugins/cybocfi-welcome.php": "./tests/env/welcome.php"
 	},
 	"config": {
 		"WP_DEBUG": true,
