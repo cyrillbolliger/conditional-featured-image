@@ -36,7 +36,7 @@
   "dependencies": {
     "@wordpress/components": "^45.0.0",
     "@wordpress/compose": "^9.2.0",
-    "@wordpress/data": "^10.10.0",
+    "@wordpress/data": "^11.2.0",
     "@wordpress/element": "^6.10.0",
     "@wordpress/hooks": "^4.10.0"
   }
