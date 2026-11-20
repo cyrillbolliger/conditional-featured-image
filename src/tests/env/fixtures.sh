@@ -22,7 +22,8 @@ wp plugin deactivate classic-editor
 wp option update woocommerce_coming_soon no
 # For 30 s after activation, WooCommerce and CPT UI redirect the next admin
 # page to their welcome screen (a transient); in CI that is the login. All
-# transients: the unpinned plugins may add more.
+# transients: the unpinned plugins may add more. WooCommerce's can come back
+# after this, so tests/env/welcome.php turns its redirect off as well.
 wp transient delete --all
 wp rewrite structure '/%postname%/'
 wp eval-file wp-content/plugins/conditional-featured-image/tests/fixtures/load.php
