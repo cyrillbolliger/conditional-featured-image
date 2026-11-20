@@ -3,11 +3,9 @@ name: update-deps
 description: Upgrade the plugin's npm dependencies in src/. Args:[major|minor].
 ---
 
-# update-deps
-
 Upgrade the npm dependencies in `src/package.json`. **Read the root
 [README](../../../README.md) first** — it owns the commands (build, wp-env,
-fixtures, Playwright). This skill adds the process, verification, and gotchas.
+fixtures, Playwright).
 
 Out of scope: the WordPress core and Classic Editor pins in `src/.wp-env.json`
 (the `update-compat` workflow moves those) and the GitHub Actions versions.
@@ -17,11 +15,10 @@ Out of scope: the WordPress core and Classic Editor pins in `src/.wp-env.json`
 ## Non-negotiable rules
 
 1. **One package at a time.** Never batch. Jumping one package across several versions is fine; if verification then fails, binary-search the versions in between for the one that broke.
-2. **Read the changelog for every version you cross, then judge impact against how the code actually uses the package** before applying. Surface breaking changes to the user in a table.
+2. **Read the changelog for every version you cross, then judge impact against how the code actually uses the package** before applying.
 3. **Verify after each bump with the end-to-end check** (README), not just a build.
-4. **Leave changes in the working tree and report** (versions moved, breaking changes found, test attribution). Only commit or push if the user asks. When asked to commit: one commit per package, `[DEPS] upgrade <pkg> to <version>`, with only `src/package.json` and `src/package-lock.json` in it.
+4. **Leave changes in the working tree and report** (versions moved, breaking changes as a table, test attribution). Only commit or push if the user asks. When asked to commit: one commit per package, `[DEPS] upgrade <pkg> to <version>`, with only `src/package.json` and `src/package-lock.json` in it.
 5. On a test failure, first **re-run the same version once**: a failure before any plugin code runs (the login in `global-setup.js`, the fixtures) that passes on the re-run is flaky. If it fails again, **prove whether it is pre-existing** (fails on the pre-upgrade version too, or on `main`) before blaming the upgrade — e.g. WooCommerce and Custom Post Type UI are installed as `latest-stable` and can change under you. Report the attribution.
-6. Track progress with a task list (one task per package).
 
 ## Process
 
@@ -30,10 +27,10 @@ Out of scope: the WordPress core and Classic Editor pins in `src/.wp-env.json`
 3. Per package: read the changelog (`@wordpress/*`: `packages/<pkg>/CHANGELOG.md` on Gutenberg's `trunk`; Playwright: `docs/src/release-notes-js.md`), grep `js/` (and `tests/` for test tooling) for the import and judge exposure, apply the bump, then rebuild, run the e2e check (also on the core RC if the baseline used one), the asset-file diff, and the package-specific steps below.
 4. Stop wp-env when done (`npm run env:stop`), unless the user wants it running.
 
-## Gotchas (raise the relevant ones)
+## Gotchas
 
 - **Runtime `@wordpress/*` packages** (`components`, `compose`, `data`, `element`, `hooks`) are **not bundled**: wp-scripts externalizes them to the `wp-*` script handles of the WordPress the plugin runs on. Their npm version only affects the build and editor hints. What matters is whether the APIs used in `js/index.js` exist in every core version from `Requires at least` (`README.txt`) up to the pin — judge changelogs against that range, not the npm version.
 - After every bump, **compare `build/index.asset.php`** with the baseline copy: its `dependencies` handles and `version` hash, not the formatting (which differs between wp-scripts versions). A new handle (e.g. `react-jsx-runtime`, which needs WP 6.6) can raise the real minimum WordPress version — check it against `Requires at least` and tell the user. A changed `version` hash alone is expected.
 - **`@wordpress/scripts`**: check its `engines` Node version against both the current Node LTS (`/.nvmrc` says `lts/*`) and the fixed `node-version` in `/.github/workflows/*.yml` — CI can lag behind LTS. A major may change lint/format defaults or webpack config; `start`/`build` must still work unchanged.
 - **`@wordpress/env`** and **`@playwright/test`** are pinned exactly (no `^`): bump with `npm install --save-exact <pkg>@<version>` and check `package.json` afterwards. After a wp-env bump, run `npx wp-env cleanup --force`, then `npm run env:start` to recreate the containers (`env:clean` only resets the databases), then reload the fixtures. After a Playwright bump, run `npx playwright install chromium`.
-- A major bump that fails with **ERESOLVE** can be blocked by the _old_ version's own subtree, which npm keeps while resolving the new one. Find the package behind the conflicting range in `package-lock.json` before blaming another dependency or adding an override. If it sits under the old version: `npm uninstall <pkg>`, install the new version fresh, then confirm `npm ci` accepts the lockfile. (Seen on `@wordpress/scripts` 32 → 37.)
+- A major bump that fails with **ERESOLVE** can be blocked by the _old_ version's own subtree, which npm keeps while resolving the new one. Find the package behind the conflicting range in `package-lock.json` before blaming another dependency or adding an override. If it sits under the old version: `npm uninstall <pkg>`, install the new version fresh, then confirm `npm ci` accepts the lockfile.
