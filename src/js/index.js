@@ -33,7 +33,11 @@ function ApplyHideByDefault() {
             return;
         }
         postIdsWithDefault.add(postId);
-        editPost({meta: {cybocfi_hide_featured_image: cybocfi.hideByDefault ? 'yes' : ''}});
+        // not the user's edit: undo must not revert it
+        editPost(
+            {meta: {cybocfi_hide_featured_image: cybocfi.hideByDefault ? 'yes' : ''}},
+            {undoIgnore: true}
+        );
     }, [postId, isNew, hasMeta, editPost]);
 
     return null;
