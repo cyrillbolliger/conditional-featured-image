@@ -184,6 +184,14 @@ Here's an example:
 
 == Changelog ==
 
+= 3.5.0 =
+* Compatibility up to WordPress 7.2
+* Added custom-fields support to every post type the plugin is enabled for that has a featured image and uses the block editor
+* Hide the checkbox on post types where the block editor can't save it
+* Fixed hiding by default: it now applies to new posts without opening the featured image panel, and stays out of the undo history
+* Store the hide-by-default flag only on post types with featured image support
+* Updated dependencies
+
 = 3.4.0 =
 * Added WordPress Abilities API support
 * Updated dependencies
