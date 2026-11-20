@@ -11,6 +11,11 @@ import {registerPlugin} from "@wordpress/plugins";
 // overwriting the user's choice.
 const postIdsWithDefault = new Set();
 
+// undefined for post types without custom-fields: the REST API neither
+// returns nor saves their meta
+const getHideFlag = (editor) =>
+    editor.getEditedPostAttribute('meta')?.cybocfi_hide_featured_image;
+
 // A plugin, not part of the featured image panel: the panel mounts only while
 // the sidebar shows it, and the user may save before that.
 function ApplyHideByDefault() {
@@ -20,9 +25,8 @@ function ApplyHideByDefault() {
         return {
             postId: editor.getCurrentPostId(),
             isNew: editor.isEditedPostNew(),
-            // no meta in the REST API for post types without custom-fields:
-            // the edit would only mark the post as changed
-            hasMeta: editor.getEditedPostAttribute('meta')?.cybocfi_hide_featured_image !== undefined,
+            // without the meta, the edit would only mark the post as changed
+            hasMeta: getHideFlag(editor) !== undefined,
             // no featured image, no use for the flag. The post type record
             // loads asynchronously: false until then, so the effect waits.
             hasThumbnail: !!postType?.supports.thumbnail,
@@ -50,11 +54,13 @@ function ApplyHideByDefault() {
 registerPlugin('cybocfi-hide-by-default', {render: ApplyHideByDefault});
 
 function HideFeaturedImage() {
-    const isHidden = useSelect((select) =>
-        // no meta in the REST API for post types without custom-fields
-        !!select('core/editor').getEditedPostAttribute('meta')?.cybocfi_hide_featured_image,
-    []);
+    const hideFlag = useSelect((select) => getHideFlag(select('core/editor')), []);
     const {editPost} = useDispatch('core/editor');
+
+    // the edit would be dropped on save
+    if (hideFlag === undefined) {
+        return null;
+    }
 
     const updateHideFeaturedImage = (value) => {
         value = value ? 'yes' : ''; // compatibility with classic editor
@@ -66,7 +72,7 @@ function HideFeaturedImage() {
             <PanelRow>
                 <CheckboxControl
                     label={cybocfiL10n.featuredImageCheckboxLabel}
-                    checked={isHidden}
+                    checked={!!hideFlag}
                     onChange={updateHideFeaturedImage}
                 />
             </PanelRow>

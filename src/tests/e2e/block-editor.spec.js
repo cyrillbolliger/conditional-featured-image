@@ -112,7 +112,8 @@ test( 'shows the checkbox for a CPT UI post type', async ( { page } ) => {
 	await expect( checkbox ).toBeChecked();
 } );
 
-// Registered by tests/env/post-types.php; the plugin adds the support.
+// Registered by tests/env/post-types.php; the plugin adds the support if
+// the post type has a featured image at registration.
 test.describe( 'a post type without custom-fields support', () => {
 	test( 'saves the checkbox', async ( { page } ) => {
 		const id = wpCli(
@@ -145,8 +146,9 @@ test.describe( 'a post type without custom-fields support', () => {
 		}
 	} );
 
-	// Only where the checkbox shows: cybocfi_memo has no featured image.
-	test( 'adds the support only for post types with a featured image', () => {
+	// Only where the checkbox shows: cybocfi_memo has no featured image,
+	// cybocfi_sketch gets it after registration.
+	test( 'adds the support only for post types with a featured image at registration', () => {
 		const supports = JSON.parse(
 			wpCli(
 				'eval',
@@ -154,11 +156,43 @@ test.describe( 'a post type without custom-fields support', () => {
 					function ( $post_type ) {
 						return post_type_supports( $post_type, 'custom-fields' );
 					},
-					array( 'cybocfi_note', 'cybocfi_memo' )
+					array( 'cybocfi_note', 'cybocfi_memo', 'cybocfi_sketch' )
 				) );`
 			)
 		);
-		expect( supports ).toEqual( [ true, false ] );
+		expect( supports ).toEqual( [ true, false, false ] );
+	} );
+
+	// cybocfi_sketch gets its featured image after registration, so the
+	// plugin doesn't add the support: the REST API would drop the checkbox.
+	test( 'hides the checkbox if the plugin cannot add it', async ( {
+		page,
+	} ) => {
+		const id = wpCli(
+			'post',
+			'create',
+			'--post_type=cybocfi_sketch',
+			'--post_title=Sketch',
+			'--post_status=publish',
+			'--porcelain'
+		);
+		try {
+			const checkbox = await openEditor( page, id );
+			await expect(
+				page.getByRole( 'button', { name: 'Set featured image' } )
+			).toBeVisible();
+			await expect( checkbox ).toHaveCount( 0 );
+			// not because the editor script is missing
+			const hasFilter = await page.evaluate( () =>
+				wp.hooks.hasFilter(
+					'editor.PostFeaturedImage',
+					'cybocfi/addControl'
+				)
+			);
+			expect( hasFilter ).toBe( true );
+		} finally {
+			wpCli( 'post', 'delete', id, '--force' );
+		}
 	} );
 
 	// Core registers it on init, for the post types that have the support
