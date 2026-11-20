@@ -85,6 +85,11 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 				return;
 			}
 
+			// without a featured image, the flag has no use
+			if ( ! post_type_supports( $post->post_type, 'thumbnail' ) ) {
+				return;
+			}
+
 			// ensure, we do not overwrite the flag if set explicitly.
 			// (update_post_meta() is called before the post is actually
 			// inserted and thus the save_post action is triggered).

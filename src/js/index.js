@@ -14,14 +14,18 @@ const postIdsWithDefault = new Set();
 // A plugin, not part of the featured image panel: the panel mounts only while
 // the sidebar shows it, and the user may save before that.
 function ApplyHideByDefault() {
-    const {postId, isNew, hasMeta} = useSelect((select) => {
+    const {postId, isNew, hasMeta, hasThumbnail} = useSelect((select) => {
         const editor = select('core/editor');
+        const postType = select('core').getPostType(editor.getCurrentPostType());
         return {
             postId: editor.getCurrentPostId(),
             isNew: editor.isEditedPostNew(),
             // no meta in the REST API for post types without custom-fields:
             // the edit would only mark the post as changed
             hasMeta: editor.getEditedPostAttribute('meta')?.cybocfi_hide_featured_image !== undefined,
+            // no featured image, no use for the flag. The post type record
+            // loads asynchronously: false until then, so the effect waits.
+            hasThumbnail: !!postType?.supports.thumbnail,
         };
     }, []);
     const {editPost} = useDispatch('core/editor');
@@ -29,7 +33,7 @@ function ApplyHideByDefault() {
     // handle_imports() stores the default on the auto-draft too, but misses a
     // filter added after the auto-draft was created.
     useEffect(() => {
-        if (!isNew || !hasMeta || postIdsWithDefault.has(postId)) {
+        if (!isNew || !hasMeta || !hasThumbnail || postIdsWithDefault.has(postId)) {
             return;
         }
         postIdsWithDefault.add(postId);
@@ -38,7 +42,7 @@ function ApplyHideByDefault() {
             {meta: {cybocfi_hide_featured_image: cybocfi.hideByDefault ? 'yes' : ''}},
             {undoIgnore: true}
         );
-    }, [postId, isNew, hasMeta, editPost]);
+    }, [postId, isNew, hasMeta, hasThumbnail, editPost]);
 
     return null;
 }

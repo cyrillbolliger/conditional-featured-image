@@ -254,6 +254,99 @@ test.describe( 'the default', () => {
 		await expect( checkbox ).toBeChecked();
 	} );
 
+	// Without a featured image, the flag has no use. cybocfi_quote has the
+	// meta in the REST API (tests/env/post-types.php). 'on' covers
+	// handle_imports() on the auto-draft and the editor script, 'late' only
+	// the editor script.
+	for ( const mode of [ 'on', 'late' ] ) {
+		test( `leaves a new post without a featured image shown when ${ mode }`, async ( {
+			page,
+		} ) => {
+			setHideByDefault( mode );
+			await visit(
+				page,
+				'/wp-admin/post-new.php?post_type=cybocfi_quote'
+			);
+			await page.waitForFunction( () =>
+				window.wp?.data?.select( 'core/editor' )?.getCurrentPostId()
+			);
+			const id = await page.evaluate( () =>
+				wp.data.select( 'core/editor' ).getCurrentPostId()
+			);
+			try {
+				// The editor script waits for the meta and the post type
+				// record.
+				await page.waitForFunction(
+					() =>
+						wp.data
+							.select( 'core/editor' )
+							.getEditedPostAttribute( 'meta' )
+							?.cybocfi_hide_featured_image !== undefined &&
+						wp.data.select( 'core' ).getPostType( 'cybocfi_quote' )
+				);
+				const { isDirty, flag } = await page.evaluate( async () => {
+					// Leaves the editor script's effect time to run.
+					await new Promise( ( resolve ) =>
+						requestAnimationFrame( () =>
+							requestAnimationFrame( resolve )
+						)
+					);
+					const editor = wp.data.select( 'core/editor' );
+					return {
+						isDirty: editor.isEditedPostDirty(),
+						flag: editor.getEditedPostAttribute( 'meta' )
+							.cybocfi_hide_featured_image,
+					};
+				} );
+				expect( isDirty ).toBe( false );
+				expect( flag ).toBe( '' );
+
+				await page.evaluate( () => {
+					const editor = wp.data.dispatch( 'core/editor' );
+					editor.editPost( { title: 'Quote' } );
+					return editor.savePost();
+				} );
+				// `post meta get` fails if the post has none
+				const savedFlag = wpCli(
+					'eval',
+					`echo get_post_meta( ${ id }, 'cybocfi_hide_featured_image', true );`
+				);
+				expect( savedFlag ).toBe( '' );
+			} finally {
+				wpCli( 'post', 'delete', id, '--force' );
+			}
+		} );
+	}
+
+	// handle_imports(), on save_post
+	test( 'hides a post created in code only with a featured image', () => {
+		setHideByDefault( 'on' );
+		const flags = JSON.parse(
+			wpCli(
+				'eval',
+				`$flags = array();
+				$ids   = array();
+				try {
+					foreach ( array( 'post', 'cybocfi_memo', 'cybocfi_quote' ) as $post_type ) {
+						$id    = wp_insert_post( array( 'post_type' => $post_type, 'post_title' => 'Created in code' ) );
+						$ids[] = $id;
+						$flags[ $post_type ] = get_post_meta( $id, 'cybocfi_hide_featured_image', true );
+					}
+				} finally {
+					foreach ( $ids as $id ) {
+						wp_delete_post( $id, true );
+					}
+				}
+				echo json_encode( $flags );`
+			)
+		);
+		expect( flags ).toEqual( {
+			post: 'yes',
+			cybocfi_memo: '',
+			cybocfi_quote: '',
+		} );
+	} );
+
 	// The default is no edit of the user's: undo must not revert it.
 	test( 'keeps the default on undo', async ( { page } ) => {
 		setHideByDefault( 'late' );
