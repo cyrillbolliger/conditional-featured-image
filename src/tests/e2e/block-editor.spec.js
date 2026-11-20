@@ -176,6 +176,70 @@ test.describe( 'the default', () => {
 		await expect( checkbox ).not.toBeChecked();
 	} );
 
+	// The featured image panel never mounts while the sidebar is closed.
+	test.describe( 'with the sidebar closed', () => {
+		// The Admin's editor preferences, as the editor stores them. Also
+		// without the welcome guide: openEditor() doesn't run here.
+		test.beforeAll( () =>
+			wpCli(
+				'user',
+				'meta',
+				'update',
+				'admin',
+				'wp_persisted_preferences',
+				JSON.stringify( {
+					core: { isComplementaryAreaVisible: false },
+					'core/edit-post': { welcomeGuide: false },
+				} ),
+				'--format=json'
+			)
+		);
+		// The editor's defaults; openEditor() sets what the other tests need.
+		test.afterAll( () =>
+			wpCli(
+				'user',
+				'meta',
+				'delete',
+				'admin',
+				'wp_persisted_preferences'
+			)
+		);
+
+		test( 'hides a new post when the filter comes late', async ( {
+			page,
+		} ) => {
+			setHideByDefault( 'late' );
+			await visit( page, '/wp-admin/post-new.php' );
+			// Saving right away could beat the editor script; a user is slower.
+			await page.waitForFunction(
+				() =>
+					window.wp?.data
+						?.select( 'core/editor' )
+						?.getEditedPostAttribute( 'meta' )
+						?.cybocfi_hide_featured_image === 'yes'
+			);
+			const id = await page.evaluate( () =>
+				wp.data.select( 'core/editor' ).getCurrentPostId()
+			);
+			try {
+				await page.evaluate( () => {
+					const editor = wp.data.dispatch( 'core/editor' );
+					editor.editPost( { title: 'Late default' } );
+					return editor.savePost();
+				} );
+				await expect( page.getByLabel( LABEL ) ).toHaveCount( 0 );
+				// `post meta get` fails if the post has none
+				const flag = wpCli(
+					'eval',
+					`echo get_post_meta( ${ id }, 'cybocfi_hide_featured_image', true );`
+				);
+				expect( flag ).toBe( 'yes' );
+			} finally {
+				wpCli( 'post', 'delete', id, '--force' );
+			}
+		} );
+	} );
+
 	// The panel unmounts while the sidebar shows the block tab.
 	test( 'keeps the choice on a new post', async ( { page } ) => {
 		setHideByDefault( 'late' );
