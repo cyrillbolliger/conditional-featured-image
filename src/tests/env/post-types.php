@@ -4,7 +4,8 @@
  * registered in code. `cybocfi_note` and `cybocfi_memo` without
  * `custom-fields` support: the plugin adds it to `cybocfi_note`, which has a
  * featured image, not to `cybocfi_memo`. `cybocfi_quote` with
- * `custom-fields` support but no featured image.
+ * `custom-fields` support but no featured image. `cybocfi_sketch` gets its
+ * featured image after registration: the plugin can't add the support.
  */
 
 add_action(
@@ -38,5 +39,15 @@ add_action(
 				'supports'     => array( 'title', 'editor', 'custom-fields' ),
 			)
 		);
+		register_post_type(
+			'cybocfi_sketch',
+			array(
+				'label'        => 'Sketches',
+				'public'       => true,
+				'show_in_rest' => true,
+				'supports'     => array( 'title', 'editor' ),
+			)
+		);
+		add_post_type_support( 'cybocfi_sketch', 'thumbnail' );
 	}
 );
