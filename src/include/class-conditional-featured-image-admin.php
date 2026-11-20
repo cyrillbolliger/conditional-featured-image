@@ -159,17 +159,15 @@ if ( ! class_exists( 'Cybocfi_Admin' ) ) {
 		 * Load the js that modifies the block editor
 		 */
 		public function load_block_editor_js() {
+			// written by wp-scripts with the script's dependencies and a hash
+			// of its content
+			$asset = require CYBOCFI_PLUGIN_PATH . '/build/index.asset.php';
+
 			wp_enqueue_script(
 				'cybocfi-script',
 				plugins_url( 'build/index.js', CYBOCFI_PLUGIN_PATH . '/conditional-featured-image.php' ),
-				array(
-					'wp-components',
-					'wp-compose',
-					'wp-data',
-					'wp-element',
-					'wp-hooks',
-					'wp-i18n',
-				)
+				$asset['dependencies'],
+				$asset['version']
 			);
 
 			wp_localize_script(
