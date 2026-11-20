@@ -1,7 +1,8 @@
 /**
  * The checkbox in the block editor's featured image panel: it shows the
  * stored flag, and saving it hides the image on the front end. Also for a
- * post type registered by CPT UI. The default of a new post
+ * post type registered by CPT UI, and for post types registered in code
+ * without `custom-fields` support. The default of a new post
  * (`cybocfi_hide_by_default` filter, set by tests/env/hide-by-default.php).
  * And the editor script's dependencies and version.
  */
@@ -111,6 +112,66 @@ test( 'shows the checkbox for a CPT UI post type', async ( { page } ) => {
 	await expect( checkbox ).toBeChecked();
 } );
 
+// Registered by tests/env/post-types.php; the plugin adds the support.
+test.describe( 'a post type without custom-fields support', () => {
+	test( 'saves the checkbox', async ( { page } ) => {
+		const id = wpCli(
+			'post',
+			'create',
+			'--post_type=cybocfi_note',
+			'--post_title=Note',
+			'--post_status=publish',
+			'--porcelain'
+		);
+		try {
+			const checkbox = await openEditor( page, id );
+			await expect( checkbox ).not.toBeChecked();
+			await checkbox.check();
+			await page
+				.getByRole( 'region', { name: 'Editor top bar' } )
+				.getByRole( 'button', { name: 'Save', exact: true } )
+				.click();
+			await expect(
+				page.getByRole( 'button', { name: 'Dismiss this notice' } )
+			).toContainText( 'updated.' );
+			// `post meta get` fails if the post has none
+			const flag = wpCli(
+				'eval',
+				`echo get_post_meta( ${ id }, 'cybocfi_hide_featured_image', true );`
+			);
+			expect( flag ).toBe( 'yes' );
+		} finally {
+			wpCli( 'post', 'delete', id, '--force' );
+		}
+	} );
+
+	// Only where the checkbox shows: cybocfi_memo has no featured image.
+	test( 'adds the support only for post types with a featured image', () => {
+		const supports = JSON.parse(
+			wpCli(
+				'eval',
+				`echo json_encode( array_map(
+					function ( $post_type ) {
+						return post_type_supports( $post_type, 'custom-fields' );
+					},
+					array( 'cybocfi_note', 'cybocfi_memo' )
+				) );`
+			)
+		);
+		expect( supports ).toEqual( [ true, false ] );
+	} );
+
+	// Core registers it on init, for the post types that have the support
+	// by then.
+	test( 'keeps the footnotes meta', () => {
+		const exists = wpCli(
+			'eval',
+			`echo json_encode( registered_meta_key_exists( 'post', 'footnotes', 'cybocfi_note' ) );`
+		);
+		expect( exists ).toBe( 'true' );
+	} );
+} );
+
 // The browser can't tell a missing dependency that another script loads
 // first, so this asks WordPress what it registered for a block editor screen.
 test( 'enqueues the script as the asset file says', () => {
@@ -152,6 +213,32 @@ test.describe( 'the default', () => {
 		const checkbox = await openEditor( page );
 		await expect( checkbox ).not.toBeChecked();
 	} );
+
+	// An edit of meta the REST API lacks would make the editor ask to save.
+	// tests/env/post-types.php registers both post types without
+	// custom-fields support: the plugin adds it to cybocfi_note only.
+	for ( const postType of [ 'cybocfi_note', 'cybocfi_memo' ] ) {
+		test( `leaves a new ${ postType } unchanged when off`, async ( {
+			page,
+		} ) => {
+			setHideByDefault( '' );
+			await visit(
+				page,
+				`/wp-admin/post-new.php?post_type=${ postType }`
+			);
+			await expect(
+				page.getByRole( 'region', { name: 'Editor top bar' } )
+			).toBeVisible();
+			// Leaves the editor script's effect time to run.
+			const isDirty = await page.evaluate( async () => {
+				await new Promise( ( resolve ) =>
+					requestAnimationFrame( () => requestAnimationFrame( resolve ) )
+				);
+				return wp.data.select( 'core/editor' ).isEditedPostDirty();
+			} );
+			expect( isDirty ).toBe( false );
+		} );
+	}
 
 	test( 'hides a new post when on', async ( { page } ) => {
 		setHideByDefault( 'on' );

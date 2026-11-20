@@ -16,7 +16,8 @@
 		"wp-content/plugins/conditional-featured-image": ".",
 		"wp-content/mu-plugins/cybocfi-notices.php": "./tests/env/notices.php",
 		"wp-content/mu-plugins/cybocfi-welcome.php": "./tests/env/welcome.php",
-		"wp-content/mu-plugins/cybocfi-hide-by-default.php": "./tests/env/hide-by-default.php"
+		"wp-content/mu-plugins/cybocfi-hide-by-default.php": "./tests/env/hide-by-default.php",
+		"wp-content/mu-plugins/cybocfi-post-types.php": "./tests/env/post-types.php"
 	},
 	"config": {
 		"WP_DEBUG": true,

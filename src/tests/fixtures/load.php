@@ -33,7 +33,7 @@ foreach ( $old_images as $id ) {
 }
 
 // A post type as CPT UI registers it, without `custom-fields`: the plugin
-// adds that support (cptui_user_supports_params).
+// adds that support (add_custom_fields_support()).
 // CPT UI reads every key its form saves.
 update_option( 'cptui_post_types', array(
 	'book' => array(
