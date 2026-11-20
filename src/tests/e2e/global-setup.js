@@ -18,8 +18,15 @@ const globalSetup = async ( config ) => {
 	await page.fill( '#user_pass', 'password' );
 	await page.click( '#wp-submit' );
 	// The cookies come with the redirect; the dashboard loads feeds from
-	// wordpress.org, which can take longer than the wait.
-	await page.waitForURL( /\/wp-admin\/$/, { waitUntil: 'commit' } );
+	// wordpress.org, which can take longer than the wait. Any admin page: a
+	// plugin's welcome screen (WooCommerce's setup wizard) can redirect the
+	// dashboard away, and then `/wp-admin/` itself never commits.
+	await page
+		.waitForURL( /\/wp-admin\//, { waitUntil: 'commit' } )
+		.catch( ( error ) => {
+			error.message += `\nThe login ended on ${ page.url() }`;
+			throw error;
+		} );
 	await page.context().storageState( { path: LOGIN } );
 	await browser.close();
 };
