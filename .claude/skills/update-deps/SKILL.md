@@ -3,8 +3,8 @@ name: update-deps
 description: Upgrade the plugin's npm dependencies in src/. Args:[major|minor].
 ---
 
-Upgrade the npm dependencies in `src/package.json`. **Read the root
-[README](../../../README.md) first** — it owns the commands (build, wp-env,
+Upgrade the npm dependencies in `src/package.json`. **Read `README.md`
+at the repo root first** — it owns the commands (build, wp-env,
 fixtures, Playwright).
 
 Out of scope: the WordPress core and Classic Editor pins in `src/.wp-env.json`
