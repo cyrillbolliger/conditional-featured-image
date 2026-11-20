@@ -1,8 +1,9 @@
 /**
  * The checkbox in the block editor's featured image panel: it shows the
  * stored flag, and saving it hides the image on the front end. Also for a
- * post type registered by CPT UI. And the editor script's dependencies and
- * version.
+ * post type registered by CPT UI. The default of a new post
+ * (`cybocfi_hide_by_default` filter, set by tests/env/hide-by-default.php).
+ * And the editor script's dependencies and version.
  */
 const { test, expect } = require( '@playwright/test' );
 const { LOGIN } = require( './global-setup' );
@@ -20,7 +21,12 @@ const LABEL =
 test.use( { storageState: LOGIN } );
 
 const openEditor = async ( page, id ) => {
-	await visit( page, `/wp-admin/post.php?post=${ id }&action=edit` );
+	await visit(
+		page,
+		id
+			? `/wp-admin/post.php?post=${ id }&action=edit`
+			: '/wp-admin/post-new.php'
+	);
 	await page.waitForFunction( () =>
 		window.wp?.data?.select( 'core/editor' )?.getCurrentPostId()
 	);
@@ -127,5 +133,66 @@ test( 'enqueues the script as the asset file says', () => {
 	expect( script ).toEqual( {
 		deps: asset.dependencies,
 		ver: asset.version,
+	} );
+} );
+
+test.describe( 'the default', () => {
+	// '', 'on' or 'late' (tests/env/hide-by-default.php)
+	const setHideByDefault = ( mode ) =>
+		wpCli( 'option', 'update', 'cybocfi_test_hide_by_default', mode );
+
+	// Also before: an interrupted run leaves the option set.
+	test.beforeAll( () => setHideByDefault( '' ) );
+	test.afterAll( () =>
+		wpCli( 'option', 'delete', 'cybocfi_test_hide_by_default' )
+	);
+
+	test( 'leaves a new post shown when off', async ( { page } ) => {
+		setHideByDefault( '' );
+		const checkbox = await openEditor( page );
+		await expect( checkbox ).not.toBeChecked();
+	} );
+
+	test( 'hides a new post when on', async ( { page } ) => {
+		setHideByDefault( 'on' );
+		const checkbox = await openEditor( page );
+		await expect( checkbox ).toBeChecked();
+	} );
+
+	test( 'hides a new post when the filter comes late', async ( {
+		page,
+	} ) => {
+		setHideByDefault( 'late' );
+		const checkbox = await openEditor( page );
+		await expect( checkbox ).toBeChecked();
+	} );
+
+	test( 'keeps the saved value of an existing post', async ( { page } ) => {
+		setHideByDefault( 'late' );
+		const checkbox = await openEditor(
+			page,
+			fixtureId( 'post', 'shown-post' )
+		);
+		await expect( checkbox ).not.toBeChecked();
+	} );
+
+	// The panel unmounts while the sidebar shows the block tab.
+	test( 'keeps the choice on a new post', async ( { page } ) => {
+		setHideByDefault( 'late' );
+		const checkbox = await openEditor( page );
+		await expect( checkbox ).toBeChecked();
+		await checkbox.uncheck();
+		await page.evaluate( () =>
+			wp.data
+				.dispatch( 'core/edit-post' )
+				.openGeneralSidebar( 'edit-post/block' )
+		);
+		await expect( checkbox ).toHaveCount( 0 );
+		await page.evaluate( () =>
+			wp.data
+				.dispatch( 'core/edit-post' )
+				.openGeneralSidebar( 'edit-post/document' )
+		);
+		await expect( checkbox ).not.toBeChecked();
 	} );
 } );

@@ -1,70 +1,54 @@
 "use strict";
 
 import {CheckboxControl, PanelRow} from "@wordpress/components";
-import {withSelect, withDispatch} from "@wordpress/data";
-import {Component, createElement, Fragment} from "@wordpress/element";
-import {compose} from "@wordpress/compose";
+import {useSelect, useDispatch} from "@wordpress/data";
+import {createElement, Fragment, useEffect} from "@wordpress/element";
 import {addFilter} from "@wordpress/hooks";
 
-let dirty = false;
+// The panel unmounts while the sidebar shows the block tab. Remembering the
+// posts that got the default keeps it from overwriting the user's choice when
+// the panel mounts again.
+const postIdsWithDefault = new Set();
 
-class HideFeaturedImage extends Component {
-    render() {
-        const {
-            meta,
-            isNew,
-            updateHideFeaturedImage,
-            getValue,
-        } = this.props;
-
-        return (
-            <>
-                <PanelRow>
-                    <CheckboxControl
-                        label={cybocfiL10n.featuredImageCheckboxLabel}
-                        checked={getValue(isNew, meta)}
-                        onChange={
-                            (value) => {
-                                this.setState({isChecked: value});
-                                updateHideFeaturedImage(value, meta);
-                            }
-                        }
-                    />
-                </PanelRow>
-            </>
-        )
-    }
-}
-
-const composedHideFeaturedImage = compose([
-    withSelect((select) => {
-        const currentMeta = select('core/editor').getCurrentPostAttribute('meta');
-        const editedMeta = select('core/editor').getEditedPostAttribute('meta');
-        const isEditedPostNew = select('core/editor').isEditedPostNew;
+function HideFeaturedImage() {
+    const {postId, isNew, isHidden} = useSelect((select) => {
+        const editor = select('core/editor');
         return {
-            meta: {...currentMeta, ...editedMeta},
-            isNew: isEditedPostNew,
+            postId: editor.getCurrentPostId(),
+            isNew: editor.isEditedPostNew(),
+            // no meta in the REST API for post types without custom-fields
+            isHidden: !!editor.getEditedPostAttribute('meta')?.cybocfi_hide_featured_image,
         };
-    }),
-    withDispatch((dispatch) => ({
-        updateHideFeaturedImage(value, meta) {
-            value = value ? 'yes' : ''; // compatibility with classic editor
-            meta = {
-                ...meta,
-                cybocfi_hide_featured_image: value,
-            };
-            dispatch('core/editor').editPost({meta});
-        },
-        getValue(isNew, meta) {
-            if (isNew() && !dirty) {
-                dirty = true;
-                this.updateHideFeaturedImage(cybocfi.hideByDefault, meta);
-                return cybocfi.hideByDefault;
-            }
-            return meta.cybocfi_hide_featured_image;
-        },
-    })),
-])(HideFeaturedImage);
+    }, []);
+    const {editPost} = useDispatch('core/editor');
+
+    const updateHideFeaturedImage = (value) => {
+        value = value ? 'yes' : ''; // compatibility with classic editor
+        editPost({meta: {cybocfi_hide_featured_image: value}});
+    };
+
+    // handle_imports() stores the default on the auto-draft too, but misses a
+    // filter added after the auto-draft was created.
+    useEffect(() => {
+        if (!isNew || postIdsWithDefault.has(postId)) {
+            return;
+        }
+        postIdsWithDefault.add(postId);
+        editPost({meta: {cybocfi_hide_featured_image: cybocfi.hideByDefault ? 'yes' : ''}});
+    }, [postId, isNew, editPost]);
+
+    return (
+        <>
+            <PanelRow>
+                <CheckboxControl
+                    label={cybocfiL10n.featuredImageCheckboxLabel}
+                    checked={isHidden}
+                    onChange={updateHideFeaturedImage}
+                />
+            </PanelRow>
+        </>
+    )
+}
 
 const wrapPostFeaturedImage = function (OriginalComponent) {
     return function (props) {
@@ -78,7 +62,7 @@ const wrapPostFeaturedImage = function (OriginalComponent) {
                     props
                 ),
                 createElement(
-                    composedHideFeaturedImage
+                    HideFeaturedImage
                 )
             )
         );
