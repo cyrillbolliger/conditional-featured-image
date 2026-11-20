@@ -1,7 +1,8 @@
 /**
  * The pinned versions the test site runs, in .wp-env.json: core and the
  * Classic Editor. WooCommerce, CPT UI and the themes are not pinned: wp-env
- * installs their latest stable version.
+ * installs their latest stable version. Only `minimum` pins WooCommerce and
+ * CPT UI, to versions that run on `Requires at least`.
  *
  * `node tests/env/pins.js detect` prints the updates to test, as the matrix
  * of update-compat.yml: one `{ component, from, to, stage, branch, issue }`
@@ -15,6 +16,10 @@
  *
  * `node tests/env/pins.js move <component> <version>` moves the pin; for core
  * also `Tested up to` in README.txt, and for a core RC only that.
+ *
+ * `node tests/env/pins.js minimum` writes the newest core release of the
+ * `Requires at least` branch (README.txt) to .wp-env.override.json, with the
+ * plugin versions in MINIMUM.
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -29,6 +34,15 @@ const writeJson = ( name, data ) =>
 	fs.writeFileSync( file( name ), JSON.stringify( data, null, '\t' ) + '\n' );
 
 const PLUGINS = [ 'classic-editor' ];
+
+// The plugin versions `minimum` runs on `Requires at least` (README.txt): their
+// latest stable versions may not support it (WooCommerce only supports the
+// latest WordPress versions). The newest ones that do; move them along with
+// `Requires at least`.
+const MINIMUM = {
+	branch: '6.7',
+	plugins: { woocommerce: '10.3.8', 'custom-post-type-ui': '1.19.3' },
+};
 
 const coreZip = ( version ) =>
 	`https://downloads.wordpress.org/release/wordpress-${ version }.zip`;
@@ -234,6 +248,46 @@ const move = ( component, version ) => {
 	}
 };
 
+// The newest release of the `Requires at least` branch: sites on that branch
+// get its minor releases automatically, and x.y.0 can have bugs they fix
+// (6.7.0 rejects WooCommerce's template names).
+const minimumCore = async () => {
+	const releases = Object.keys(
+		await getJson( 'https://api.wordpress.org/core/stable-check/1.0/' )
+	).filter(
+		( version ) =>
+			version === MINIMUM.branch ||
+			version.startsWith( `${ MINIMUM.branch }.` )
+	);
+	if ( ! releases.length ) {
+		throw new Error(
+			`No release of WordPress ${ MINIMUM.branch } in the stable-check API: check MINIMUM.branch in tests/env/pins.js.`
+		);
+	}
+	return releases.reduce( ( a, b ) => ( isNewer( b, a ) ? b : a ) );
+};
+
+const minimum = async () => {
+	const branch = read( 'README.txt' ).match(
+		/^Requires at least: ([\d.]+)/m
+	)[ 1 ];
+	if ( branch !== MINIMUM.branch ) {
+		throw new Error(
+			`Requires at least is ${ branch }, the minimum plugin versions are for ${ MINIMUM.branch }: move MINIMUM in tests/env/pins.js.`
+		);
+	}
+	const prefix = 'https://downloads.wordpress.org/plugin/';
+	writeJson( '.wp-env.override.json', {
+		...updatedEnv( 'core', await minimumCore() ),
+		plugins: readJson( '.wp-env.json' ).plugins.map( ( plugin ) => {
+			const slug = plugin.slice( prefix.length ).split( '.' )[ 0 ];
+			return MINIMUM.plugins[ slug ]
+				? pluginZip( slug, MINIMUM.plugins[ slug ] )
+				: plugin;
+		} ),
+	} );
+};
+
 const [ command, ...args ] = process.argv.slice( 2 );
 if ( command === 'detect' ) {
 	detect().then( ( matrix ) =>
@@ -243,6 +297,8 @@ if ( command === 'detect' ) {
 	override( ...args );
 } else if ( command === 'move' ) {
 	move( ...args );
+} else if ( command === 'minimum' ) {
+	minimum();
 } else {
 	throw new Error( `Unknown command: ${ command }` );
 }

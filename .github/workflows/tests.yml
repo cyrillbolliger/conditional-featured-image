@@ -5,11 +5,17 @@ on:
     branches: [main]
   pull_request:
 
-# The end-to-end check on the pins (src/.wp-env.json).
+# The end-to-end check on the pins (src/.wp-env.json), and on the oldest
+# WordPress the plugin supports (`Requires at least` in src/README.txt; see
+# `minimum` in src/tests/env/pins.js).
 jobs:
   check:
-    name: End-to-end check
+    name: End-to-end check (${{ matrix.versions }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        versions: [pinned, minimum]
     # This job runs the plugins' code: it gets no write access.
     permissions:
       contents: read
@@ -36,6 +42,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Put the minimum versions in place
+        if: matrix.versions == 'minimum'
+        run: node tests/env/pins.js minimum
+
       - name: Start wp-env
         run: npm run env:start
 
@@ -49,7 +59,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.versions }}
           path: |
             src/tests/e2e/report/
             src/tests/e2e/results/

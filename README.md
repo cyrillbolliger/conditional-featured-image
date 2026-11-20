@@ -52,4 +52,14 @@ npx playwright install chromium # once
 npm run test:e2e
 ```
 
+To run it against the oldest supported WordPress (`Requires at least` in `src/README.txt`) as CI does, write the override first, then start wp-env, reset its database and load the fixtures again. The reset is needed because WordPress 6.8 and later store passwords in a format older versions can't read, so the login would fail. To return to the pins, delete `src/.wp-env.override.json`, then run `npm run env:start` and `npm run env:fixtures`.
+
+```bash
+node tests/env/pins.js minimum
+npm run env:start
+npm run env:clean
+npm run env:fixtures
+npm run test:e2e
+```
+
 `.github/workflows/update-compat.yml` runs the same check against new WordPress core and Classic Editor versions every Monday and Thursday. A pass on a stable version opens a PR that moves the pin (for core, also `Tested up to`), a pass on a core release candidate one that moves only `Tested up to`; a failing test opens an issue labelled `compat`; a run whose setup failed before the tests opens none and is retried on the next schedule. After merging a core PR, push `README.txt` to SVN by hand.
