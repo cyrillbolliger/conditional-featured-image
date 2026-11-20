@@ -1,11 +1,13 @@
 /**
  * The checkbox in the block editor's featured image panel: it shows the
  * stored flag, and saving it hides the image on the front end. Also for a
- * post type registered by CPT UI.
+ * post type registered by CPT UI. And the editor script's dependencies and
+ * version.
  */
 const { test, expect } = require( '@playwright/test' );
 const { LOGIN } = require( './global-setup' );
 const {
+	wpCli,
 	fixtureId,
 	setHideFlag,
 	featuredImage,
@@ -101,4 +103,29 @@ test( 'shows the checkbox for a CPT UI post type', async ( { page } ) => {
 		fixtureId( 'book', 'hidden-book' )
 	);
 	await expect( checkbox ).toBeChecked();
+} );
+
+// The browser can't tell a missing dependency that another script loads
+// first, so this asks WordPress what it registered for a block editor screen.
+test( 'enqueues the script as the asset file says', () => {
+	const { script, asset } = JSON.parse(
+		wpCli(
+			'eval',
+			`require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
+			require_once ABSPATH . 'wp-admin/includes/screen.php';
+			$screen = WP_Screen::get( 'post' );
+			$screen->is_block_editor( true );
+			$screen->set_current_screen();
+			do_action( 'enqueue_block_editor_assets' );
+			$script = wp_scripts()->registered['cybocfi-script'];
+			echo json_encode( array(
+				'script' => array( 'deps' => $script->deps, 'ver' => $script->ver ),
+				'asset'  => require CYBOCFI_PLUGIN_PATH . '/build/index.asset.php',
+			) );`
+		)
+	);
+	expect( script ).toEqual( {
+		deps: asset.dependencies,
+		ver: asset.version,
+	} );
 } );
